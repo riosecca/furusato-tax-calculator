@@ -542,6 +542,11 @@
     const resultDetail = document.getElementById('result-detail');
     const resultNote = document.getElementById('result-note');
 
+    const defaultSelections = {
+      family: 'couple-child',
+      income: '700',
+    };
+
     const baseEstimates = {
       150: 12000,
       200: 19000,
@@ -581,6 +586,24 @@
       resultDetail.textContent = detail;
     }
 
+    function applyDefaultSelections() {
+      document
+        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+        .forEach((el) => {
+          const isFamilyDefault =
+            el.name === 'family' && el.value === defaultSelections.family;
+          const isIncomeDefault =
+            el.name === 'income' && el.value === defaultSelections.income;
+          el.checked = isFamilyDefault || isIncomeDefault ? true : false;
+          if (el.type === 'checkbox') el.checked = false;
+        });
+
+      updateResultCard({
+        amount: '−円',
+        detail: '家族構成と収入を選択すると目安が表示されます',
+      });
+    }
+
     calcButton?.addEventListener('click', () => {
       const selectedFamily = getSelectedValue('family');
       const selectedIncome = getSelectedValue('income');
@@ -618,18 +641,10 @@
     });
 
     resetButton?.addEventListener('click', () => {
-      document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((el) => {
-        el.checked = false;
-      });
-
-      const defaultFamily = document.querySelector('input[name="family"][value="couple-child"]');
-      defaultFamily && (defaultFamily.checked = true);
-
-      updateResultCard({
-        amount: '−円',
-        detail: '家族構成と収入を選択してください',
-      });
+      applyDefaultSelections();
     });
+
+    applyDefaultSelections();
   </script>
 </body>
 
