@@ -6,374 +6,335 @@
   <title>ふるさと納税かんたん&詳細シミュレーター</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      --bg-main: #f7f3ed;
+      --bg-card: #ffffff;
+      --bg-highlight: #fff8ed;
+      --text-main: #3c3a37;
+      --text-muted: #6c6863;
+      --border: #e5d8c7;
+      --accent: #e76c3c;
+      --accent-sub: #d9435b;
+      --shadow: 0 16px 36px rgba(60, 58, 55, 0.08);
+      --radius: 12px;
+    }
+
     * {
       box-sizing: border-box;
     }
 
-    :root {
-      --bg-main: #020817;
-      --bg-card: rgba(15, 23, 42, 0.78);
-      --border-subtle: rgba(148, 163, 184, 0.35);
-      --text-primary: #f9fafb;
-      --text-secondary: #9ca3af;
-      --accent: #0a84ff;
-      --accent-soft: rgba(10, 132, 255, 0.16);
-      --radius-lg: 18px;
-      --radius-pill: 999px;
-      --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.65);
-      --blur-strength: 20px;
-      --transition-fast: 150ms ease-out;
-    }
-
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
-      color: var(--text-primary);
+      font-family: "Noto Sans JP", "Hiragino Sans", "Helvetica Neue", Arial,
+        sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
       -webkit-font-smoothing: antialiased;
     }
 
     .app {
-      max-width: 960px;
+      max-width: 1000px;
       margin: 32px auto 56px;
       padding: 0 20px;
     }
 
     .app-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
     }
 
     .app-title {
-      font-size: 1.7rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      letter-spacing: 0.02em;
+      margin: 0 0 6px;
     }
 
     .app-subtitle {
-      font-size: 0.86rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin: 0;
     }
 
-    .badge {
-      padding: 6px 12px;
-      border-radius: var(--radius-pill);
-      font-size: 0.74rem;
-      background: rgba(15, 23, 42, 0.85);
-      color: var(--text-secondary);
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      backdrop-filter: blur(var(--blur-strength));
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .tab-button {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-card);
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: border-color 120ms ease, box-shadow 120ms ease,
+        transform 120ms ease;
+    }
+
+    .tab-button small {
+      display: block;
+      margin-top: 4px;
+      font-weight: 500;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .tab-button.tab-active {
+      background: var(--bg-highlight);
+      border-color: #f0cfa7;
+      transform: translateY(-2px);
+    }
+
+    .panel {
+      margin-top: 16px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 16px;
     }
 
     .card {
       background: var(--bg-card);
-      border-radius: var(--radius-lg);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      padding: 22px 22px 20px;
-      box-shadow: var(--shadow-soft);
-      backdrop-filter: blur(var(--blur-strength));
-    }
-
-    /* tabs = macOSのセグメントコントロールっぽく */
-
-    .tabs {
-      display: inline-flex;
-      padding: 3px;
-      border-radius: var(--radius-pill);
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      margin-bottom: 18px;
-    }
-
-    .tab-button {
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 0.82rem;
-      padding: 7px 18px;
-      border-radius: var(--radius-pill);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: background var(--transition-fast), color var(--transition-fast),
-        box-shadow var(--transition-fast), transform var(--transition-fast);
-      white-space: nowrap;
-    }
-
-    .tab-button span {
-      font-size: 0.72rem;
-      opacity: 0.85;
-    }
-
-    .tab-button:hover {
-      background: rgba(15, 23, 42, 0.9);
-      color: #e5e7eb;
-    }
-
-    .tab-button.tab-active {
-      background: #f9fafb;
-      color: #020617;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.6);
-      transform: translateY(-0.5px);
-    }
-
-    .tab-button.tab-active span {
-      opacity: 0.7;
-      color: #4b5563;
-    }
-
-    .panel {
-      display: none;
-      margin-top: 4px;
-    }
-
-    .panel.panel-active {
-      display: block;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
     }
 
     .section-title {
-      font-size: 0.94rem;
-      font-weight: 600;
-      margin: 2px 0 4px;
-    }
-
-    .section-caption {
-      font-size: 0.78rem;
-      color: var(--text-secondary);
-      margin: 0 0 10px;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px 16px;
-      margin-top: 12px;
-    }
-
-    .form-field {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .form-label {
-      font-size: 0.8rem;
-      color: #e5e7eb;
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
+      align-items: center;
       gap: 8px;
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+      font-weight: 700;
     }
 
-    .form-hint {
-      font-size: 0.72rem;
-      color: var(--text-secondary);
+    .section-desc {
+      margin: 0 0 16px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
     }
 
-    .input,
-    .select {
-      width: 100%;
-      padding: 9px 11px;
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: radial-gradient(circle at top left,
-          rgba(30, 64, 175, 0.16),
-          rgba(15, 23, 42, 0.96));
-      color: var(--text-primary);
+    .pill-note {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: var(--bg-highlight);
+      border: 1px solid #f3dfc7;
+      color: var(--text-main);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      background: #fffdf9;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .step-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f0cfa7;
+      color: #8a4e00;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-size: 0.9rem;
-      transition: border-color var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background var(--transition-fast), transform var(--transition-fast);
     }
 
-    .input::placeholder {
-      color: rgba(148, 163, 184, 0.7);
+    .option-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
 
-    .input:focus,
-    .select:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(10, 132, 255, 0.9);
-      background: rgba(15, 23, 42, 0.98);
-      transform: translateY(-0.5px);
+    .option-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      transition: border-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .option-card:hover {
+      border-color: #f0cfa7;
+      box-shadow: 0 8px 16px rgba(60, 58, 55, 0.06);
+    }
+
+    .option-card label {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .option-card small {
+      display: block;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .option-card input[type="radio"] {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
     }
 
     .checkbox-row {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: 4px;
+      font-weight: 600;
+      color: var(--text-main);
     }
 
     .checkbox-row input[type="checkbox"] {
-      width: 16px;
-      height: 16px;
-      accent-color: var(--accent);
-      border-radius: 4px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-sub);
     }
 
-    .button-row {
+    .actions {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
       align-items: center;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
     }
 
     .btn-primary {
+      background: linear-gradient(90deg, #ffb347, #ff8c68);
+      color: #fff;
       border: none;
-      border-radius: var(--radius-pill);
-      padding: 9px 20px;
-      font-size: 0.9rem;
-      font-weight: 600;
+      border-radius: 999px;
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
-      background: linear-gradient(135deg, #0a84ff, #64d2ff);
-      color: #ffffff;
-      box-shadow: 0 14px 30px rgba(10, 132, 255, 0.55);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform var(--transition-fast),
-        box-shadow var(--transition-fast), filter var(--transition-fast);
+      box-shadow: 0 10px 22px rgba(232, 108, 60, 0.25);
+      transition: transform 120ms ease, box-shadow 120ms ease;
     }
 
     .btn-primary:hover {
-      filter: brightness(1.07);
-      box-shadow: 0 18px 40px rgba(10, 132, 255, 0.7);
-      transform: translateY(-0.5px);
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(232, 108, 60, 0.28);
     }
 
     .btn-secondary {
-      border-radius: var(--radius-pill);
-      padding: 8px 16px;
-      font-size: 0.8rem;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-primary);
-      cursor: pointer;
-      transition: background var(--transition-fast),
-        border-color var(--transition-fast),
-        color var(--transition-fast), transform var(--transition-fast);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(31, 41, 55, 0.95);
-      border-color: rgba(209, 213, 219, 0.7);
-      transform: translateY(-0.5px);
-    }
-
-    .btn-primary:active,
-    .btn-secondary:active {
-      transform: translateY(0.5px);
-      box-shadow: none;
-    }
-
-    .result-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: 14px;
-      margin-top: 22px;
-    }
-
-    .result-card {
-      border-radius: 16px;
-      border: 1px solid var(--border-subtle);
-      padding: 13px 15px 12px;
-      background:
-        linear-gradient(135deg,
-          rgba(15, 23, 42, 0.98),
-          rgba(15, 23, 42, 0.94));
-      box-shadow: 0 16px 34px rgba(15, 23, 42, 0.9);
-    }
-
-    .result-label {
-      font-size: 0.76rem;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-    }
-
-    .result-value-main {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-    }
-
-    .result-unit {
-      font-size: 0.84rem;
-      margin-left: 6px;
-      color: var(--text-secondary);
-    }
-
-    .result-sub {
-      font-size: 0.76rem;
-      color: var(--text-secondary);
-      margin-top: 6px;
-    }
-
-    .result-detail-list {
-      font-size: 0.78rem;
-      color: #e5e7eb;
-      margin: 2px 0 0;
-      padding-left: 18px;
-    }
-
-    .pill-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .pill {
-      padding: 5px 11px;
-      font-size: 0.72rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: var(--text-primary);
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .pill::before {
-      content: "";
-      display: inline-block;
-      width: 5px;
-      height: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
       border-radius: 999px;
-      margin-right: 6px;
-      background: var(--accent);
+      padding: 11px 18px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
-    .footer-note {
-      margin-top: 18px;
-      font-size: 0.7rem;
-      color: var(--text-secondary);
+    .side-card {
+      background: linear-gradient(180deg, #fff, #fff7ec);
+      border: 1px solid #f1dcc0;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 18px;
+      position: relative;
+      overflow: hidden;
     }
 
-    @media (max-width: 720px) {
-      .app {
-        margin-top: 20px;
+    .side-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(255, 200, 150, 0.22), transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(255, 140, 120, 0.12), transparent 35%);
+      pointer-events: none;
+    }
+
+    .result-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0 0 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .result-body {
+      margin-top: 12px;
+      background: #fff2e3;
+      border: 1px dashed #f0cfa7;
+      border-radius: 10px;
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-value {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #c9452c;
+      margin: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .result-note {
+      color: var(--text-muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .result-footer {
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 820px) {
+      .layout {
+        grid-template-columns: 1fr;
       }
 
-      .app-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-
-      .app-title {
-        font-size: 1.45rem;
-      }
-
-      .result-grid {
-        grid-template-columns: minmax(0, 1fr);
+      .tab-button {
+        padding: 12px;
       }
     }
   </style>
@@ -382,215 +343,294 @@
 <body>
   <div class="app">
     <header class="app-header">
-      <div>
-        <div class="app-title">ふるさと納税 シミュレーター</div>
-        <p class="app-subtitle">
-          「かんたん入力」と「詳細入力」を切り替えて、控除の上限目安をチェックできます。
-        </p>
-      </div>
-      <div class="badge">v1 UI プロトタイプ</div>
-    </header>
+      <h1 class="app-title">ふるさと納税シミュレーション</h1>
+      <p class="app-subtitle">
+        かんたん入力で控除上限額の目安がわかります。詳細を確認したい場合は、控除上限額シミュレーションからどうぞ。
+      </p>
 
-    <section class="card">
-      <!-- タブ切り替え -->
       <div class="tabs" role="tablist">
         <button id="tab-simple" class="tab-button tab-active" data-target="panel-simple" type="button">
-          かんたん版
-          <span>初心者向け</span>
+          かんたんシミュレーション
+          <small>まずはこちらから</small>
         </button>
         <button id="tab-advanced" class="tab-button" data-target="panel-advanced" type="button">
-          詳細版
-          <span>控除を細かく指定</span>
+          控除上限額（目安）シミュレーション
+          <small>実際の控除額が知りたい場合</small>
         </button>
       </div>
+    </header>
 
-      <!-- かんたん版 -->
-      <div id="panel-simple" class="panel panel-active" aria-labelledby="tab-simple">
-        <h2 class="section-title">かんたん入力</h2>
-        <p class="section-caption">
-          「年収」と「家族構成」だけで、おおよその上限額をサクッと計算します。
-        </p>
+    <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
+      <div class="layout">
+        <section class="card">
+          <div class="section-title">かんたんシミュレーション</div>
+          <p class="section-desc">
+            以下の項目をもとに本日の控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
+          </p>
+          <div class="pill-note">家族構成と年収だけ入力すると目安金額が出ます</div>
 
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="form-label" for="simple-income">
-              年収（給与のみ）
-              <span class="form-hint">額面ベースの目安でOK</span>
-            </label>
-            <input id="simple-income" class="input" type="number" min="0" inputmode="numeric" placeholder="例）5500000" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="simple-family">
-              家族構成
-              <span class="form-hint">大まかな区分でOK</span>
-            </label>
-            <select id="simple-family" class="select">
-              <option value="single">独身 / 共働き（子なし）</option>
-              <option value="married-deduction">
-                片働き（配偶者控除あり）
-              </option>
-              <option value="child-1">配偶者＋子1人</option>
-              <option value="child-2plus">配偶者＋子2人以上</option>
-            </select>
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="simple-bonus">
-              賞与（年間合計・任意）
-              <span class="form-hint">分からなければ空欄でOK</span>
-            </label>
-            <input id="simple-bonus" class="input" type="number" min="0" inputmode="numeric" placeholder="例）800000" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label">その他</label>
-            <div class="checkbox-row">
-              <input type="checkbox" id="simple-homeloan" />
-              <label for="simple-homeloan" class="form-hint">
-                住宅ローン控除を受けている
-              </label>
+          <div class="steps">
+            <div class="step">
+              <div class="step-header">
+                <span class="step-number">STEP.1</span>
+                <span>家族構成を選択する</span>
+              </div>
+              <div class="option-grid">
+                <label class="option-card">
+                  <input type="radio" name="family" value="couple-child" checked />
+                  <div>
+                    <span>夫婦</span>
+                    <small>こどもがいる</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="family" value="couple" />
+                  <div>
+                    <span>夫婦で配偶者控除を受ける</span>
+                    <small>こどもがいない</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="family" value="single" />
+                  <div>
+                    <span>単身、もしくは共働き（配偶者控除がない）</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="family" value="extended" />
+                  <div>
+                    <span>他の扶養親族がいる（家族のみ）</span>
+                  </div>
+                </label>
+              </div>
             </div>
-            <div class="checkbox-row">
-              <input type="checkbox" id="simple-special-deduction" />
-              <label for="simple-special-deduction" class="form-hint">
-                医療費控除など大きめの控除がある
-              </label>
+
+            <div class="step">
+              <div class="step-header">
+                <span class="step-number">STEP.2</span>
+                <span>年収（所得）</span>
+              </div>
+              <div class="option-grid">
+                <label class="option-card">
+                  <input type="radio" name="income" value="150" />
+                  <div>
+                    <span>150万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="200" />
+                  <div>
+                    <span>200万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="300" />
+                  <div>
+                    <span>300万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="400" />
+                  <div>
+                    <span>400万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="700" />
+                  <div>
+                    <span>700万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="1000" />
+                  <div>
+                    <span>1,000万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="1200" />
+                  <div>
+                    <span>1,200万円</span>
+                    <small>給与所得</small>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-header">
+                <span class="step-number">STEP.3</span>
+                <span>その他（任意）</span>
+              </div>
+              <div class="steps">
+                <label class="checkbox-row">
+                  <input type="checkbox" name="one-stop" />
+                  <span>ワンストップ特例の寄附のみ</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" name="large-deduction" />
+                  <span>今年、医療費控除や住宅ローン控除などの金額がある</span>
+                </label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="button-row">
-          <button id="btn-simple-calc" class="btn-primary" type="button">
-            この条件で計算する
-          </button>
-          <button id="btn-simple-reset" class="btn-secondary" type="button">
-            入力をリセット
-          </button>
-          <span class="form-hint">
-            ※ 正確な金額は住民税決定通知書などを使った「詳細版」で確認してください。
-          </span>
-        </div>
+          <div class="actions">
+            <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
+            <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
+          </div>
+        </section>
+
+        <aside class="side-card">
+          <div class="result-title">
+            <span aria-hidden="true">🏔️</span>
+            あなたのシミュレーション結果
+          </div>
+          <div class="result-body" id="result-card">
+            <p class="result-note" id="result-note">あなたの控除上限額（目安）は</p>
+            <p class="result-value" id="result-value">−<span>円</span></p>
+            <p class="result-note" id="result-detail">家族構成と収入を選択してください</p>
+          </div>
+          <div class="result-footer">
+            ※控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
+          </div>
+        </aside>
       </div>
+    </main>
 
-      <!-- 詳細版 -->
-      <div id="panel-advanced" class="panel" aria-labelledby="tab-advanced">
-        <h2 class="section-title">詳細入力</h2>
-        <p class="section-caption">
-          「所得控除」や「住民税所得割額」などを入れて、より実額に近い上限額を計算します。
+    <section class="panel" id="panel-advanced" aria-labelledby="tab-advanced" hidden>
+      <div class="card">
+        <div class="section-title">控除上限額（目安）シミュレーション</div>
+        <p class="section-desc">
+          源泉徴収票や住民税決定通知書の数値を入力すると、より正確な上限額を計算できます。詳細な入力フォームは別途実装予定です。
         </p>
-
-        <div class="form-grid">
-          <div class="form-field">
-            <label class="form-label" for="adv-taxable-income">
-              課税所得（所得税の対象となる金額）
-              <span class="form-hint">できれば「源泉徴収票」ベースで</span>
-            </label>
-            <input id="adv-taxable-income" class="input" type="number" min="0" inputmode="numeric"
-              placeholder="例）3300000" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="adv-total-deduction">
-              所得控除の合計額
-              <span class="form-hint">社会保険料・生命保険など</span>
-            </label>
-            <input id="adv-total-deduction" class="input" type="number" min="0" inputmode="numeric"
-              placeholder="例）1400000" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="adv-resident-tax">
-              住民税所得割額
-              <span class="form-hint">住民税決定通知書の金額</span>
-            </label>
-            <input id="adv-resident-tax" class="input" type="number" min="0" inputmode="numeric"
-              placeholder="例）215000" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="adv-income-tax-rate">
-              所得税率
-              <span class="form-hint">10% / 20% など</span>
-            </label>
-            <select id="adv-income-tax-rate" class="select">
-              <option value="0.05">5%</option>
-              <option value="0.1" selected>10%</option>
-              <option value="0.2">20%</option>
-              <option value="0.23">23%</option>
-              <option value="0.33">33%</option>
-              <option value="0.4">40%</option>
-              <option value="0.45">45%</option>
-            </select>
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="adv-other-deduction">
-              ふるさと納税以外の税額控除
-              <span class="form-hint">住宅ローン・配当控除など</span>
-            </label>
-            <input id="adv-other-deduction" class="input" type="number" min="0" inputmode="numeric"
-              placeholder="例）50000" />
-          </div>
-
-          <div class="form-field">
-            <label class="form-label" for="adv-current-donation">
-              すでに行ったふるさと納税額
-              <span class="form-hint">今年分の累計</span>
-            </label>
-            <input id="adv-current-donation" class="input" type="number" min="0" inputmode="numeric"
-              placeholder="例）30000" />
-          </div>
-        </div>
-
-        <div class="button-row">
-          <button id="btn-adv-calc" class="btn-primary" type="button">
-            詳細条件で計算する
-          </button>
-          <button id="btn-adv-reset" class="btn-secondary" type="button">
-            入力をリセット
-          </button>
-          <span class="form-hint">
-            ※ 上限ギリギリではなく、少し余裕を持った額にすることをおすすめします。
-          </span>
-        </div>
-
-        <div class="pill-row">
-          <div class="pill">ONE-STOP 特例の 2,000円自己負担を考慮</div>
-          <div class="pill">住民税所得割の 20% 上限ルールを考慮</div>
+        <div class="result-footer">
+          こちらは現在準備中です。控除額の目安が知りたい場合は「かんたんシミュレーション」をご利用ください。
         </div>
       </div>
-
-      <!-- 結果表示エリア（共通） -->
-      <div class="result-grid">
-        <div class="result-card">
-          <div class="result-label">今年のふるさと納税 上限目安</div>
-          <div>
-            <span id="result-max" class="result-value-main">—</span>
-            <span class="result-unit">円</span>
-          </div>
-          <div id="result-range" class="result-sub">
-            条件を入力して「計算する」を押してください。
-          </div>
-        </div>
-        <div class="result-card">
-          <div class="result-label">内訳イメージ</div>
-          <ul id="result-detail" class="result-detail-list">
-            <li>控除される住民税・所得税の合計：— 円</li>
-            <li>自己負担額（原則）：2,000 円</li>
-            <li>ワンストップ or 確定申告により適用</li>
-          </ul>
-        </div>
-      </div>
-
-      <p class="footer-note">
-        ※ 本ツールはあくまで目安です。実際の控除額はお住まいの自治体・所得状況により変動します。
-      </p>
     </section>
   </div>
 
-  <!-- ビルドされた JS を読み込む。パスは環境に合わせて変更してください -->
-  <script src="dist/main.js" defer></script>
+  <script>
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        tabButtons.forEach((b) => b.classList.remove('tab-active'));
+        btn.classList.add('tab-active');
+
+        document.querySelectorAll('.panel').forEach((panel) => {
+          if (panel.id === target) {
+            panel.removeAttribute('hidden');
+          } else {
+            panel.setAttribute('hidden', 'true');
+          }
+        });
+      });
+    });
+
+    // --- Simple simulation interactions ---
+    const calcButton = document.getElementById('btn-simple-calc');
+    const resetButton = document.getElementById('btn-simple-reset');
+    const resultValue = document.getElementById('result-value');
+    const resultDetail = document.getElementById('result-detail');
+    const resultNote = document.getElementById('result-note');
+
+    const baseEstimates = {
+      150: 12000,
+      200: 19000,
+      300: 28000,
+      400: 42000,
+      700: 106000,
+      1000: 176000,
+      1200: 210000,
+    };
+
+    const familyAdjustments = {
+      single: 0,
+      couple: -5000,
+      'couple-child': -15000,
+      extended: -8000,
+    };
+
+    function formatYen(value) {
+      return `${Math.max(Math.round(value), 0).toLocaleString()}円`;
+    }
+
+    function getSelectedValue(name) {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : null;
+    }
+
+    function getSelectedLabelText(checkedInput) {
+      if (!checkedInput) return '';
+      const label = checkedInput.closest('label');
+      const text = label ? label.textContent.trim().replace(/\s+/g, ' ') : '';
+      return text;
+    }
+
+    function updateResultCard({ amount, detail }) {
+      resultValue.textContent = amount;
+      resultNote.textContent = 'あなたの控除上限額（目安）は';
+      resultDetail.textContent = detail;
+    }
+
+    calcButton?.addEventListener('click', () => {
+      const selectedFamily = getSelectedValue('family');
+      const selectedIncome = getSelectedValue('income');
+      const hasOneStop = Boolean(document.querySelector('input[name="one-stop"]:checked'));
+      const hasLargeDeduction = Boolean(
+        document.querySelector('input[name="large-deduction"]:checked')
+      );
+
+      if (!selectedFamily || !selectedIncome) {
+        updateResultCard({
+          amount: '−円',
+          detail: '家族構成と収入の両方を選択してください',
+        });
+        return;
+      }
+
+      const incomeBase = baseEstimates[selectedIncome];
+      const adjustment = familyAdjustments[selectedFamily] ?? 0;
+      const deductionHit = hasLargeDeduction ? 8000 : 0;
+      const oneStopBonus = hasOneStop ? 2000 : 0;
+
+      const estimated = incomeBase + adjustment - deductionHit + oneStopBonus;
+
+      const incomeLabel = getSelectedLabelText(
+        document.querySelector('input[name="income"]:checked')
+      );
+      const familyLabel = getSelectedLabelText(
+        document.querySelector('input[name="family"]:checked')
+      );
+
+      updateResultCard({
+        amount: formatYen(estimated),
+        detail: `${familyLabel}・${incomeLabel} をもとにしたざっくり試算です`,
+      });
+    });
+
+    resetButton?.addEventListener('click', () => {
+      document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach((el) => {
+        el.checked = false;
+      });
+
+      const defaultFamily = document.querySelector('input[name="family"][value="couple-child"]');
+      defaultFamily && (defaultFamily.checked = true);
+
+      updateResultCard({
+        amount: '−円',
+        detail: '家族構成と収入を選択してください',
+      });
+    });
+  </script>
 </body>
 
 </html>
