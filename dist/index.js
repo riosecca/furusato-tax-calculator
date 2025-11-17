@@ -1,8 +1,8 @@
-import { validateFurusatoInput } from "./utils/validation";
-import { calculateIncomeTaxBase } from "./calculators/income-tax";
-import { calculateResidentTaxBase } from "./calculators/resident-basic";
-import { calculateFurusatoDeduction } from "./calculators/resident-special";
-import { calculateFurusatoLimit } from "./calculators/limit";
+import { validateFurusatoInput } from "./utils/validation.js";
+import { calculateIncomeTaxBase } from "./calculators/income-tax.js";
+import { calculateResidentTaxBase } from "./calculators/resident-basic.js";
+import { calculateFurusatoDeduction } from "./calculators/resident-special.js";
+import { calculateFurusatoLimit } from "./calculators/limit.js";
 export function calculateFurusatoTax(input) {
     validateFurusatoInput(input);
     const incomeBase = calculateIncomeTaxBase(input);

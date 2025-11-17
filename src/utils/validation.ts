@@ -1,4 +1,4 @@
-import { FurusatoInput } from "../types/input";
+import type { FurusatoInput } from "../types/input.js";
 
 function assertNonNegative(value: number, field: string): void {
   if (!Number.isFinite(value) || value < 0) {

@@ -1,5 +1,5 @@
-import { RESIDENT_TAX_BASIC_RATE } from "../constants/resident";
-import { floorToThousand, roundToYen } from "../utils/rounding";
+import { RESIDENT_TAX_BASIC_RATE } from "../constants/resident.js";
+import { floorToThousand, roundToYen } from "../utils/rounding.js";
 export function calculateResidentTaxBase(input, incomeTaxBase) {
     const taxableIncome = incomeTaxBase.taxableIncome;
     if (input.residentTaxIncome !== undefined) {

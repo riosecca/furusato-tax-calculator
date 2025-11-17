@@ -1,5 +1,5 @@
-import { getIncomeTaxRateAndDeduction } from "../constants/tax-rates";
-import { floorToThousand, roundToYen } from "../utils/rounding";
+import { getIncomeTaxRateAndDeduction } from "../constants/tax-rates.js";
+import { floorToThousand, roundToYen } from "../utils/rounding.js";
 const BASIC_DEDUCTION_DEFAULT = 480000;
 export function calculateTotalIncome(breakdown) {
     var _a;
