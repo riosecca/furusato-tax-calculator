@@ -44,6 +44,8 @@ function setupCalculatorForm(): void {
   const incomeInput = document.getElementById("income") as HTMLInputElement | null;
   const spouseSelect = document.getElementById("hasSpouse") as HTMLSelectElement | null;
   const dependentsInput = document.getElementById("dependents") as HTMLInputElement | null;
+  const donatedAlreadyInput = document.getElementById("donatedAlready") as HTMLInputElement | null;
+  const donateNowInput = document.getElementById("donateNow") as HTMLInputElement | null;
   const resultElement = document.getElementById("result");
 
   if (!(form instanceof HTMLFormElement) || !resultElement) {
@@ -58,14 +60,16 @@ function setupCalculatorForm(): void {
       const dependentsRaw = getNumberFromInput(dependentsInput, "扶養家族の人数");
       const dependents = Math.floor(dependentsRaw);
       const hasSpouse = (spouseSelect?.value ?? "no") === "yes";
+      const donatedAlready = getNumberFromInput(donatedAlreadyInput, "すでに寄付した額");
+      const donateNow = getNumberFromInput(donateNowInput, "今回寄付する額");
 
       const deductions = buildDeductions(hasSpouse, dependents);
 
       const baseInput: FurusatoInput = {
         income: { salaryIncome },
         deductions,
-        donatedAlready: 0,
-        donateNow: 0,
+        donatedAlready,
+        donateNow,
         useOneStop: true
       };
 
@@ -75,19 +79,27 @@ function setupCalculatorForm(): void {
 
       const inputForLimitDonation: FurusatoInput = {
         ...baseInput,
-        donateNow: limit.maxDonation
+        donateNow: Math.max(limit.maxDonation - donatedAlready, 0)
       };
 
-      const { tax, actualCost } = calculateFurusatoTax(inputForLimitDonation);
+      const currentPlanResult = calculateFurusatoTax(baseInput);
+      const limitDonationResult = calculateFurusatoTax(inputForLimitDonation);
 
       const messages = [
         `控除上限の目安: ${formatCurrency(limit.maxDonation)}`,
         `既寄付分を差し引いた残り寄付可能額: ${formatCurrency(limit.donationRemaining)}`,
-        `この上限まで寄付した場合の自己負担目安: ${formatCurrency(actualCost)}`,
+        `今回の寄付額: ${formatCurrency(donateNow)}`,
+        `この条件での自己負担目安: ${formatCurrency(currentPlanResult.actualCost)}`,
         `控除内訳 (所得税 / 住民税 基本 / 住民税 特例): ${[
-          formatCurrency(tax.incomeTax),
-          formatCurrency(tax.residentBasic),
-          formatCurrency(tax.residentSpecial)
+          formatCurrency(currentPlanResult.tax.incomeTax),
+          formatCurrency(currentPlanResult.tax.residentBasic),
+          formatCurrency(currentPlanResult.tax.residentSpecial)
+        ].join(" / ")}`,
+        `上限まで寄付した場合の自己負担目安: ${formatCurrency(limitDonationResult.actualCost)}`,
+        `上限寄付時の控除内訳 (所得税 / 住民税 基本 / 住民税 特例): ${[
+          formatCurrency(limitDonationResult.tax.incomeTax),
+          formatCurrency(limitDonationResult.tax.residentBasic),
+          formatCurrency(limitDonationResult.tax.residentSpecial)
         ].join(" / ")}`,
         `試算に使った前提: 年収 ${formatCurrency(salaryIncome)}, 配偶者${
           hasSpouse ? "あり" : "なし"
