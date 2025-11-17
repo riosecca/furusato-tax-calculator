@@ -377,27 +377,27 @@
               </div>
               <div class="option-grid">
                 <label class="option-card">
-                  <input type="radio" name="family" checked />
+                  <input type="radio" name="family" value="couple-child" checked />
                   <div>
                     <span>夫婦</span>
                     <small>こどもがいる</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="family" />
+                  <input type="radio" name="family" value="couple" />
                   <div>
                     <span>夫婦で配偶者控除を受ける</span>
                     <small>こどもがいない</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="family" />
+                  <input type="radio" name="family" value="single" />
                   <div>
                     <span>単身、もしくは共働き（配偶者控除がない）</span>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="family" />
+                  <input type="radio" name="family" value="extended" />
                   <div>
                     <span>他の扶養親族がいる（家族のみ）</span>
                   </div>
@@ -412,49 +412,49 @@
               </div>
               <div class="option-grid">
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="150" />
                   <div>
                     <span>150万円</span>
                     <small>給与所得</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="200" />
                   <div>
                     <span>200万円</span>
                     <small>給与所得</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="300" />
                   <div>
                     <span>300万円</span>
                     <small>給与所得</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="400" />
                   <div>
                     <span>400万円</span>
                     <small>給与所得</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="700" />
                   <div>
                     <span>700万円</span>
                     <small>給与所得</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="1000" />
                   <div>
                     <span>1,000万円</span>
                     <small>給与所得</small>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" />
+                  <input type="radio" name="income" value="1200" />
                   <div>
                     <span>1,200万円</span>
                     <small>給与所得</small>
@@ -470,11 +470,11 @@
               </div>
               <div class="steps">
                 <label class="checkbox-row">
-                  <input type="checkbox" />
+                  <input type="checkbox" name="one-stop" />
                   <span>ワンストップ特例の寄附のみ</span>
                 </label>
                 <label class="checkbox-row">
-                  <input type="checkbox" />
+                  <input type="checkbox" name="large-deduction" />
                   <span>今年、医療費控除や住宅ローン控除などの金額がある</span>
                 </label>
               </div>
@@ -482,8 +482,8 @@
           </div>
 
           <div class="actions">
-            <button class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
-            <button class="btn-secondary" type="button">入力内容をリセット</button>
+            <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
+            <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
           </div>
         </section>
 
@@ -492,10 +492,10 @@
             <span aria-hidden="true">🏔️</span>
             あなたのシミュレーション結果
           </div>
-          <div class="result-body">
-            <p class="result-note">あなたの控除上限額（目安）は</p>
-            <p class="result-value">−<span>円</span></p>
-            <p class="result-note">家族構成と収入を選択してください</p>
+          <div class="result-body" id="result-card">
+            <p class="result-note" id="result-note">あなたの控除上限額（目安）は</p>
+            <p class="result-value" id="result-value">−<span>円</span></p>
+            <p class="result-note" id="result-detail">家族構成と収入を選択してください</p>
           </div>
           <div class="result-footer">
             ※控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
@@ -534,6 +534,117 @@
         });
       });
     });
+
+    // --- Simple simulation interactions ---
+    const calcButton = document.getElementById('btn-simple-calc');
+    const resetButton = document.getElementById('btn-simple-reset');
+    const resultValue = document.getElementById('result-value');
+    const resultDetail = document.getElementById('result-detail');
+    const resultNote = document.getElementById('result-note');
+
+    const defaultSelections = {
+      family: 'couple-child',
+      income: '700',
+    };
+
+    const baseEstimates = {
+      150: 12000,
+      200: 19000,
+      300: 28000,
+      400: 42000,
+      700: 106000,
+      1000: 176000,
+      1200: 210000,
+    };
+
+    const familyAdjustments = {
+      single: 0,
+      couple: -5000,
+      'couple-child': -15000,
+      extended: -8000,
+    };
+
+    function formatYen(value) {
+      return `${Math.max(Math.round(value), 0).toLocaleString()}円`;
+    }
+
+    function getSelectedValue(name) {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : null;
+    }
+
+    function getSelectedLabelText(checkedInput) {
+      if (!checkedInput) return '';
+      const label = checkedInput.closest('label');
+      const text = label ? label.textContent.trim().replace(/\s+/g, ' ') : '';
+      return text;
+    }
+
+    function updateResultCard({ amount, detail }) {
+      resultValue.textContent = amount;
+      resultNote.textContent = 'あなたの控除上限額（目安）は';
+      resultDetail.textContent = detail;
+    }
+
+    function applyDefaultSelections() {
+      document
+        .querySelectorAll('input[type="radio"], input[type="checkbox"]')
+        .forEach((el) => {
+          const isFamilyDefault =
+            el.name === 'family' && el.value === defaultSelections.family;
+          const isIncomeDefault =
+            el.name === 'income' && el.value === defaultSelections.income;
+          el.checked = isFamilyDefault || isIncomeDefault ? true : false;
+          if (el.type === 'checkbox') el.checked = false;
+        });
+
+      updateResultCard({
+        amount: '−円',
+        detail: '家族構成と収入を選択すると目安が表示されます',
+      });
+    }
+
+    calcButton?.addEventListener('click', () => {
+      const selectedFamily = getSelectedValue('family');
+      const selectedIncome = getSelectedValue('income');
+      const hasOneStop = Boolean(document.querySelector('input[name="one-stop"]:checked'));
+      const hasLargeDeduction = Boolean(
+        document.querySelector('input[name="large-deduction"]:checked')
+      );
+
+      if (!selectedFamily || !selectedIncome) {
+        updateResultCard({
+          amount: '−円',
+          detail: '家族構成と収入の両方を選択してください',
+        });
+        return;
+      }
+
+      const incomeBase = baseEstimates[selectedIncome];
+      const adjustment = familyAdjustments[selectedFamily] ?? 0;
+      const deductionHit = hasLargeDeduction ? 8000 : 0;
+      const oneStopBonus = hasOneStop ? 2000 : 0;
+
+      const estimated = incomeBase + adjustment - deductionHit + oneStopBonus;
+
+      const incomeLabel = getSelectedLabelText(
+        document.querySelector('input[name="income"]:checked')
+      );
+      const familyLabel = getSelectedLabelText(
+        document.querySelector('input[name="family"]:checked')
+      );
+
+      updateResultCard({
+        amount: formatYen(estimated),
+        detail: `${familyLabel}・${incomeLabel} をもとにしたざっくり試算です`,
+      });
+    });
+
+    resetButton?.addEventListener('click', () => {
+      applyDefaultSelections();
+    });
+
+    applyDefaultSelections();
   </script>
 </body>
 
