@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
-    <meta charset="UTF-8" />
-    <title>Furusato Tax Calculator</title>
+  <meta charset="UTF-8" />
+  <title>Furusato Tax Calculator</title>
 </head>
-
 <body>
-    <h1>Furusato Tax Calculator</h1>
-    <script type="module" src="./index.js"></script>
-</body>
+  <h1>Furusato Tax Calculator</h1>
 
+  <form id="calc-form">
+    <div>
+      <label>
+        年収（給与収入）:
+        <input id="income" type="number" required />
+      </label>
+    </div>
+
+    <div>
+      <label>
+        配偶者の有無:
+        <select id="hasSpouse">
+          <option value="no">なし</option>
+          <option value="yes">あり</option>
+        </select>
+      </label>
+    </div>
+
+    <div>
+      <label>
+        扶養家族の人数:
+        <input id="dependents" type="number" value="0" min="0" />
+      </label>
+    </div>
+
+    <button type="submit">控除上限を計算</button>
+  </form>
+
+  <h2>結果</h2>
+  <pre id="result">まだ計算していません</pre>
+
+  <!-- ここが大事 -->
+  <script type="module" src="./index.js"></script>
+</body>
 </html>
