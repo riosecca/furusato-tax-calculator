@@ -13,7 +13,7 @@ export function calculateTotalIncome(breakdown) {
         dividendIncome,
         capitalGain
     ];
-    return incomes.reduce((sum, value = 0) => sum + value, 0);
+    return incomes.reduce((sum, value) => sum + (value !== null && value !== void 0 ? value : 0), 0);
 }
 export function calculateTotalDeductions(deductions) {
     const { socialInsurance, lifeInsurance, earthquakeInsurance, smallEnterpriseMutualAid, medicalExpense, donationOther, dependentDeduction, spouseDeduction, specialSpouseDeduction, basic } = deductions;
@@ -29,7 +29,7 @@ export function calculateTotalDeductions(deductions) {
         specialSpouseDeduction,
         basic !== null && basic !== void 0 ? basic : BASIC_DEDUCTION_DEFAULT
     ];
-    return deductionValues.reduce((sum, value = 0) => sum + value, 0);
+    return deductionValues.reduce((sum, value) => sum + (value !== null && value !== void 0 ? value : 0), 0);
 }
 export function calculateIncomeTaxBase(input) {
     const totalIncome = calculateTotalIncome(input.income);
