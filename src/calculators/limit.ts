@@ -1,9 +1,9 @@
-import { FurusatoInput } from "../types/input";
-import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident";
-import { LimitResult } from "../types/result";
-import { IncomeTaxBaseResult, calculateTotalIncome } from "./income-tax";
-import { ResidentTaxBaseResult } from "./resident-basic";
-import { roundToYen } from "../utils/rounding";
+import type { FurusatoInput } from "../types/input.js";
+import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident.js";
+import type { LimitResult } from "../types/result.js";
+import { IncomeTaxBaseResult, calculateTotalIncome } from "./income-tax.js";
+import type { ResidentTaxBaseResult } from "./resident-basic.js";
+import { roundToYen } from "../utils/rounding.js";
 
 export function calculateFurusatoLimit(
   input: FurusatoInput,

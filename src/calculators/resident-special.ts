@@ -1,9 +1,9 @@
-import { FurusatoInput } from "../types/input";
-import { TaxBreakdown } from "../types/result";
-import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident";
-import { roundToYen } from "../utils/rounding";
-import { IncomeTaxBaseResult } from "./income-tax";
-import { ResidentTaxBaseResult } from "./resident-basic";
+import type { FurusatoInput } from "../types/input.js";
+import type { TaxBreakdown } from "../types/result.js";
+import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident.js";
+import { roundToYen } from "../utils/rounding.js";
+import type { IncomeTaxBaseResult } from "./income-tax.js";
+import type { ResidentTaxBaseResult } from "./resident-basic.js";
 
 function createTaxBreakdown(
   donationTarget: number,

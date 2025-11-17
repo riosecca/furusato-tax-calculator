@@ -1,6 +1,6 @@
-import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident";
-import { calculateTotalIncome } from "./income-tax";
-import { roundToYen } from "../utils/rounding";
+import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident.js";
+import { calculateTotalIncome } from "./income-tax.js";
+import { roundToYen } from "../utils/rounding.js";
 export function calculateFurusatoLimit(input, incomeBase, residentBase) {
     const totalIncome = calculateTotalIncome(input.income);
     const incomeLimit = totalIncome * 0.4 + 2000; // 控除対象寄付額の逆算（-2000円を戻す）

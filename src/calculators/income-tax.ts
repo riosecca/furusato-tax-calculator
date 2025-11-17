@@ -1,6 +1,6 @@
-import { FurusatoInput, IncomeBreakdown, DeductionBreakdown } from "../types/input";
-import { getIncomeTaxRateAndDeduction } from "../constants/tax-rates";
-import { floorToThousand, roundToYen } from "../utils/rounding";
+import type { FurusatoInput, IncomeBreakdown, DeductionBreakdown } from "../types/input.js";
+import { getIncomeTaxRateAndDeduction } from "../constants/tax-rates.js";
+import { floorToThousand, roundToYen } from "../utils/rounding.js";
 
 const BASIC_DEDUCTION_DEFAULT = 480000;
 

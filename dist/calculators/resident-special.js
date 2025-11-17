@@ -1,5 +1,5 @@
-import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident";
-import { roundToYen } from "../utils/rounding";
+import { RESIDENT_TAX_BASIC_RATE, RESIDENT_TAX_SPECIAL_LIMIT_RATE } from "../constants/resident.js";
+import { roundToYen } from "../utils/rounding.js";
 function createTaxBreakdown(donationTarget, incomeBase, residentBase) {
     const incomeTaxDeduction = roundToYen(donationTarget * incomeBase.incomeTaxRate);
     const residentBasicDeduction = roundToYen(donationTarget * RESIDENT_TAX_BASIC_RATE);

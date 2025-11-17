@@ -1,7 +1,7 @@
-import { FurusatoInput } from "../types/input";
-import { RESIDENT_TAX_BASIC_RATE } from "../constants/resident";
-import { IncomeTaxBaseResult } from "./income-tax";
-import { floorToThousand, roundToYen } from "../utils/rounding";
+import type { FurusatoInput } from "../types/input.js";
+import { RESIDENT_TAX_BASIC_RATE } from "../constants/resident.js";
+import type { IncomeTaxBaseResult } from "./income-tax.js";
+import { floorToThousand, roundToYen } from "../utils/rounding.js";
 
 export interface ResidentTaxBaseResult {
   taxableIncome: number; // 住民税の課税所得
