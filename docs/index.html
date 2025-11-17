@@ -264,6 +264,93 @@
       cursor: pointer;
     }
 
+    .form-card {
+      display: grid;
+      gap: 18px;
+    }
+
+    .form-step {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      background: #fffdf9;
+      display: grid;
+      gap: 12px;
+    }
+
+    .step-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .step-title small {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-grid.columns {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .field-label {
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .field-label small {
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-row input,
+    .input-row select {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 1rem;
+      background: #fff;
+    }
+
+    .input-row input:focus,
+    .input-row select:focus {
+      outline: 2px solid #f7cfa1;
+      border-color: #f0cfa7;
+    }
+
+    .input-suffix {
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .note-box {
+      background: var(--bg-highlight);
+      border: 1px solid #f3dfc7;
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
     .side-card {
       background: linear-gradient(180deg, #fff, #fff7ec);
       border: 1px solid #f1dcc0;
@@ -505,14 +592,169 @@
     </main>
 
     <section class="panel" id="panel-advanced" aria-labelledby="tab-advanced" hidden>
-      <div class="card">
-        <div class="section-title">控除上限額（目安）シミュレーション</div>
-        <p class="section-desc">
-          源泉徴収票や住民税決定通知書の数値を入力すると、より正確な上限額を計算できます。詳細な入力フォームは別途実装予定です。
-        </p>
-        <div class="result-footer">
-          こちらは現在準備中です。控除額の目安が知りたい場合は「かんたんシミュレーション」をご利用ください。
-        </div>
+      <div class="layout">
+        <section class="card">
+          <div class="section-title">控除上限額（目安）シミュレーション</div>
+          <p class="section-desc">
+            源泉徴収票や住民税決定通知書の数値を入力すると、より正確な上限額を計算できます。金額は半角数字で入力してください。
+          </p>
+
+          <form id="advanced-form" class="form-card" autocomplete="off">
+            <div class="form-step">
+              <p class="step-title"><span class="step-number">STEP.1</span> あなたや家族の所得はいくら？</p>
+              <div class="form-grid columns">
+                <div>
+                  <label class="field-label" for="adv-income">あなたの給与収入 <small>必須</small></label>
+                  <div class="input-row">
+                    <input id="adv-income" type="number" inputmode="decimal" min="0" placeholder="0" required />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-spouse-income">配偶者の給与収入 <small>配偶者がいる場合は必須</small></label>
+                  <div class="input-row">
+                    <input id="adv-spouse-income" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-listed">株式譲渡益（上場） <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-listed" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-unlisted">株式譲渡益（非上場） <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-unlisted" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-step">
+              <p class="step-title"><span class="step-number">STEP.2</span> あなたの家族構成は？</p>
+              <div class="form-grid columns">
+                <div>
+                  <label class="field-label" for="adv-has-spouse">配偶者の有無 <small>必須</small></label>
+                  <div class="input-row">
+                    <select id="adv-has-spouse" required>
+                      <option value="none">なし</option>
+                      <option value="has">あり</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-family-type">ご家庭に該当しますか？ <small>必須</small></label>
+                  <div class="input-row">
+                    <select id="adv-family-type" required>
+                      <option value="none">非該当</option>
+                      <option value="couple">夫婦のみ</option>
+                      <option value="single-parent">ひとり親</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-dependents">一般の扶養控除</label>
+                  <div class="input-row">
+                    <input id="adv-dependents" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
+                    <span class="input-suffix">人</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-disabled">障害者</label>
+                  <div class="input-row">
+                    <input id="adv-disabled" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
+                    <span class="input-suffix">人</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-special-self">本人/同居の特別障害者</label>
+                  <div class="input-row">
+                    <input id="adv-special-self" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
+                    <span class="input-suffix">人</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-special-other">同居の特別障害者</label>
+                  <div class="input-row">
+                    <input id="adv-special-other" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
+                    <span class="input-suffix">人</span>
+                  </div>
+                </div>
+              </div>
+              <div class="note-box">扶養や障害者の人数は控除対象の人数を入力してください。入力がない場合は0人として計算します。</div>
+            </div>
+
+            <div class="form-step">
+              <p class="step-title"><span class="step-number">STEP.3</span> あなたの保険料や控除額はいくら？</p>
+              <div class="form-grid columns">
+                <div>
+                  <label class="field-label" for="adv-social">社会保険料等の金額 <small>必須</small></label>
+                  <div class="input-row">
+                    <input id="adv-social" type="number" inputmode="decimal" min="0" placeholder="0" required />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-small-enterprise">小規模企業共済等掛金の金額 <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-small-enterprise" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-life">生命保険料控除額 <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-life" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-earthquake">地震保険料控除額 <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-earthquake" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-medical">医療費控除の金額 <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-medical" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="field-label" for="adv-housing">住宅借入金等特別控除額 <small>任意</small></label>
+                  <div class="input-row">
+                    <input id="adv-housing" type="number" inputmode="decimal" min="0" placeholder="0" />
+                    <span class="input-suffix">円</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn-primary" type="submit">この条件で控除上限額を計算する</button>
+              <button class="btn-secondary" type="reset">入力内容をリセット</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="side-card">
+          <div class="result-title">
+            <span aria-hidden="true">📊</span>
+            詳細シミュレーション結果
+          </div>
+          <div class="result-body" id="advanced-result">
+            <p class="result-note" id="advanced-note">入力すると控除上限額（目安）を計算します</p>
+            <p class="result-value" id="advanced-value">−<span>円</span></p>
+            <p class="result-note" id="advanced-detail">年収と控除の内訳を入力してください</p>
+          </div>
+          <div class="result-footer" id="advanced-footnote">基礎控除や扶養控除を加味した目安額です。実際の金額はお手元の証憑でご確認ください。</div>
+        </aside>
       </div>
     </section>
   </div>
@@ -645,6 +887,185 @@
     });
 
     applyDefaultSelections();
+
+    // --- Advanced simulation interactions ---
+    const advancedForm = document.getElementById('advanced-form');
+    const advancedValue = document.getElementById('advanced-value');
+    const advancedDetail = document.getElementById('advanced-detail');
+    const advancedNote = document.getElementById('advanced-note');
+    const advancedFootnote = document.getElementById('advanced-footnote');
+    const advancedSpouseSelect = document.getElementById('adv-has-spouse');
+    const advancedSpouseIncome = document.getElementById('adv-spouse-income');
+
+    const ADV_BASIC_DEDUCTION = 480000;
+    const ADV_SPOUSE_DEDUCTION = 380000;
+    const ADV_DEPENDENT_DEDUCTION = 380000;
+    const ADV_DISABLED_GENERAL = 270000;
+    const ADV_DISABLED_SPECIAL = 400000;
+
+    const ADV_TAX_BRACKETS = [
+      { min: 0, max: 1950000, rate: 0.05, deduction: 0 },
+      { min: 1950000, max: 3300000, rate: 0.1, deduction: 97500 },
+      { min: 3300000, max: 6950000, rate: 0.2, deduction: 427500 },
+      { min: 6950000, max: 9000000, rate: 0.23, deduction: 636000 },
+      { min: 9000000, max: 18000000, rate: 0.33, deduction: 1536000 },
+      { min: 18000000, max: 40000000, rate: 0.4, deduction: 2796000 },
+      { min: 40000000, max: Infinity, rate: 0.45, deduction: 4796000 },
+    ];
+
+    function parseAmount(id) {
+      const el = document.getElementById(id);
+      if (!(el instanceof HTMLInputElement)) return 0;
+      const value = Number(el.value);
+      if (!Number.isFinite(value) || value < 0) return 0;
+      return value;
+    }
+
+    function parseCount(id) {
+      return Math.max(0, Math.floor(parseAmount(id)));
+    }
+
+    function getTaxRate(taxableIncome) {
+      const bracket = ADV_TAX_BRACKETS.find(
+        (b) => taxableIncome >= b.min && taxableIncome < b.max
+      );
+      return bracket ?? { rate: 0, deduction: 0 };
+    }
+
+    function resetAdvancedResult() {
+      advancedValue.textContent = '−円';
+      advancedNote.textContent = '入力すると控除上限額（目安）を計算します';
+      advancedDetail.textContent = '年収と控除の内訳を入力してください';
+      advancedFootnote.textContent =
+        '基礎控除や扶養控除を加味した目安額です。実際の金額はお手元の証憑でご確認ください。';
+    }
+
+    function ensureAdvancedValid() {
+      if (!(advancedForm instanceof HTMLFormElement)) return false;
+      if (!advancedForm.checkValidity()) {
+        advancedForm.reportValidity();
+        return false;
+      }
+      return true;
+    }
+
+    function handleSpouseRequirement() {
+      if (
+        !(advancedSpouseSelect instanceof HTMLSelectElement) ||
+        !(advancedSpouseIncome instanceof HTMLInputElement)
+      ) {
+        return;
+      }
+
+      const needsSpouseIncome = advancedSpouseSelect.value === 'has';
+      advancedSpouseIncome.required = needsSpouseIncome;
+      advancedSpouseIncome.disabled = !needsSpouseIncome;
+      advancedSpouseIncome.placeholder = needsSpouseIncome ? '0' : '配偶者なし';
+
+      if (!needsSpouseIncome) {
+        advancedSpouseIncome.value = '';
+      }
+    }
+
+    function calculateAdvanced() {
+      const salaryIncome = parseAmount('adv-income');
+      const spouseIncome = parseAmount('adv-spouse-income');
+      const listedGain = parseAmount('adv-listed');
+      const unlistedGain = parseAmount('adv-unlisted');
+      const familyType = (document.getElementById('adv-family-type') ?? {}).value || 'none';
+      const hasSpouse = (document.getElementById('adv-has-spouse') ?? {}).value === 'has';
+
+      const dependents = parseCount('adv-dependents');
+      const disabled = parseCount('adv-disabled');
+      const specialSelf = parseCount('adv-special-self');
+      const specialOther = parseCount('adv-special-other');
+
+      const socialInsurance = parseAmount('adv-social');
+      const smallEnterprise = parseAmount('adv-small-enterprise');
+      const lifeInsurance = parseAmount('adv-life');
+      const earthquakeInsurance = parseAmount('adv-earthquake');
+      const medicalDeduction = parseAmount('adv-medical');
+      const housingDeduction = parseAmount('adv-housing');
+
+      const totalIncome = salaryIncome + listedGain + unlistedGain;
+      const spouseDeduction = hasSpouse && spouseIncome <= 1060000 ? ADV_SPOUSE_DEDUCTION : 0;
+      const dependentDeduction = dependents * ADV_DEPENDENT_DEDUCTION;
+      const disabledDeduction =
+        disabled * ADV_DISABLED_GENERAL + (specialSelf + specialOther) * ADV_DISABLED_SPECIAL;
+
+      const totalDeductions =
+        ADV_BASIC_DEDUCTION +
+        spouseDeduction +
+        dependentDeduction +
+        disabledDeduction +
+        socialInsurance +
+        smallEnterprise +
+        lifeInsurance +
+        earthquakeInsurance +
+        medicalDeduction +
+        housingDeduction;
+
+      const taxableIncome = Math.max(totalIncome - totalDeductions, 0);
+      const taxableRounded = Math.floor(taxableIncome / 1000) * 1000;
+
+      const { rate: incomeTaxRate, deduction: incomeTaxDeductionBase } = getTaxRate(taxableRounded);
+      const incomeTaxAmount = Math.max(Math.round(taxableRounded * incomeTaxRate - incomeTaxDeductionBase), 0);
+      const residentTaxAmount = Math.max(Math.round(taxableRounded * 0.1), 0);
+
+      const incomeLimit = totalIncome * 0.4 + 2000;
+      const specialRate = 1 - incomeTaxRate - 0.1;
+      const residentLimit =
+        specialRate > 0 ? residentTaxAmount * 0.2 / specialRate + 2000 : Infinity;
+
+      const maxDonationRaw = Math.min(incomeLimit, residentLimit);
+      const maxDonation = Math.max(Math.round(Number.isFinite(maxDonationRaw) ? maxDonationRaw : 0), 0);
+
+      const donationTarget = Math.max(maxDonation - 2000, 0);
+      const incomeTaxDeduction = Math.round(donationTarget * incomeTaxRate);
+      const residentBasicDeduction = Math.round(donationTarget * 0.1);
+      const residentSpecialDeduction = Math.round(
+        Math.min(Math.max(donationTarget * (1 - incomeTaxRate - 0.1), 0), residentTaxAmount * 0.2)
+      );
+      const totalTaxDeduction = incomeTaxDeduction + residentBasicDeduction + residentSpecialDeduction;
+      const actualCost = Math.max(maxDonation - totalTaxDeduction, 0);
+
+      advancedValue.textContent = formatYen(maxDonation);
+      advancedNote.textContent = 'あなたの控除上限額（目安）は';
+      advancedDetail.textContent = `${hasSpouse ? '配偶者あり' : '配偶者なし'} / ${dependents}人扶養 / 課税所得 ${formatYen(
+        taxableRounded
+      )} をもとに試算しています`;
+      const familyText =
+        familyType === 'couple'
+          ? '夫婦のみ世帯'
+          : familyType === 'single-parent'
+            ? 'ひとり親世帯'
+            : '一般世帯';
+      advancedFootnote.textContent = `(${familyText}) 概算控除内訳: 所得税 ${formatYen(
+        incomeTaxDeduction
+      )}・住民税(基本) ${formatYen(residentBasicDeduction)}・住民税(特例) ${formatYen(
+        residentSpecialDeduction
+      )}。この条件で寄附すると自己負担の目安は ${formatYen(actualCost)} です。`;
+    }
+
+    advancedForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!ensureAdvancedValid()) {
+        return;
+      }
+      calculateAdvanced();
+    });
+
+    advancedForm?.addEventListener('reset', () => {
+      setTimeout(() => {
+        resetAdvancedResult();
+        handleSpouseRequirement();
+      }, 0);
+    });
+
+    advancedSpouseSelect?.addEventListener('change', handleSpouseRequirement);
+
+    handleSpouseRequirement();
+    resetAdvancedResult();
   </script>
 </body>
 
