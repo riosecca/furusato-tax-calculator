@@ -25,7 +25,7 @@ export function calculateTotalIncome(breakdown: IncomeBreakdown): number {
     capitalGain
   ];
 
-  return incomes.reduce((sum, value = 0) => sum + value, 0);
+  return incomes.reduce((sum: number, value?: number) => sum + (value ?? 0), 0);
 }
 
 export function calculateTotalDeductions(deductions: DeductionBreakdown): number {
@@ -55,7 +55,7 @@ export function calculateTotalDeductions(deductions: DeductionBreakdown): number
     basic ?? BASIC_DEDUCTION_DEFAULT
   ];
 
-  return deductionValues.reduce((sum, value = 0) => sum + value, 0);
+  return deductionValues.reduce((sum: number, value?: number) => sum + (value ?? 0), 0);
 }
 
 export interface IncomeTaxBaseResult {
