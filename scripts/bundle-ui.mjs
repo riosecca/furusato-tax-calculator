@@ -7,6 +7,7 @@ const __dirname = resolve(__filename, '..', '..');
 
 const filesInOrder = [
   'docs/utils/currency.js',
+  'docs/storage/session.js',
   'docs/ui/tabs.js',
   'docs/ui/simple-simulator.js',
   'docs/ui/advanced-simulator.js',

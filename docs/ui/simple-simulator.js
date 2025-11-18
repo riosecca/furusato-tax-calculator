@@ -1,4 +1,5 @@
 import { formatYen } from '../utils/currency.js';
+import { loadSimpleSessionState, saveSimpleSessionState, } from '../storage/session.js';
 const DEFAULT_SELECTIONS = {
     family: 'couple-child',
     income: '700',
@@ -18,7 +19,14 @@ const familyAdjustments = {
     'couple-child': -15000,
     extended: -8000,
 };
+const defaultSimpleState = {
+    family: DEFAULT_SELECTIONS.family,
+    income: DEFAULT_SELECTIONS.income,
+    oneStop: false,
+    largeDeduction: false,
+};
 export function initSimpleSimulator() {
+    var _a;
     if (typeof document === 'undefined') {
         return;
     }
@@ -32,33 +40,28 @@ export function initSimpleSimulator() {
     }
     const getSelectedInput = (name) => document.querySelector(`input[name="${name}"]:checked`);
     const getSelectedValue = (name) => { var _a, _b; return (_b = (_a = getSelectedInput(name)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : null; };
-    const getSelectedLabelText = (input) => {
-        var _a, _b;
-        if (!input) {
-            return '';
+    const setRadioValue = (name, value) => {
+        const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (target) {
+            target.checked = true;
         }
-        const label = input.closest('label');
-        return label ? (_b = (_a = label.textContent) === null || _a === void 0 ? void 0 : _a.trim().replace(/\s+/g, ' ')) !== null && _b !== void 0 ? _b : '' : '';
+    };
+    const setCheckboxValue = (name, checked) => {
+        const target = document.querySelector(`input[name="${name}"]`);
+        if (target) {
+            target.checked = checked;
+        }
     };
     const updateResultCard = ({ amount, detail }) => {
         resultValue.textContent = amount;
         resultDetail.textContent = detail !== null && detail !== void 0 ? detail : '';
         resultNote.textContent = 'あなたの控除上限額（目安）は';
     };
-    const applyDefaultSelections = () => {
-        document
-            .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-            .forEach((element) => {
-            const isFamilyDefault = element.name === 'family' && element.value === DEFAULT_SELECTIONS.family;
-            const isIncomeDefault = element.name === 'income' && element.value === DEFAULT_SELECTIONS.income;
-            if (element.type === 'checkbox') {
-                element.checked = false;
-            }
-            else if (element.type === 'radio') {
-                element.checked = isFamilyDefault || isIncomeDefault;
-            }
-        });
-        runSimpleSimulation();
+    const applyStateToInputs = (state) => {
+        setRadioValue('family', state.family);
+        setRadioValue('income', state.income);
+        setCheckboxValue('one-stop', state.oneStop);
+        setCheckboxValue('large-deduction', state.largeDeduction);
     };
     function runSimpleSimulation() {
         var _a, _b;
@@ -73,16 +76,20 @@ export function initSimpleSimulator() {
             });
             return;
         }
+        const stateToSave = {
+            family: selectedFamily,
+            income: selectedIncome,
+            oneStop: hasOneStop,
+            largeDeduction: hasLargeDeduction,
+        };
+        saveSimpleSessionState(stateToSave);
         const incomeBase = (_a = baseEstimates[selectedIncome]) !== null && _a !== void 0 ? _a : 0;
         const adjustment = (_b = familyAdjustments[selectedFamily]) !== null && _b !== void 0 ? _b : 0;
         const deductionHit = hasLargeDeduction ? 8000 : 0;
         const oneStopBonus = hasOneStop ? 2000 : 0;
         const estimated = incomeBase + adjustment - deductionHit + oneStopBonus;
-        const incomeLabel = getSelectedLabelText(getSelectedInput('income'));
-        const familyLabel = getSelectedLabelText(getSelectedInput('family'));
         updateResultCard({
             amount: formatYen(estimated),
-            detail: '',
         });
     }
     calcButton === null || calcButton === void 0 ? void 0 : calcButton.addEventListener('click', runSimpleSimulation);
@@ -91,6 +98,11 @@ export function initSimpleSimulator() {
         .forEach((element) => {
         element.addEventListener('change', runSimpleSimulation);
     });
-    resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener('click', applyDefaultSelections);
-    applyDefaultSelections();
+    resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener('click', () => {
+        applyStateToInputs(defaultSimpleState);
+        runSimpleSimulation();
+    });
+    const savedState = (_a = loadSimpleSessionState()) !== null && _a !== void 0 ? _a : defaultSimpleState;
+    applyStateToInputs(savedState);
+    runSimpleSimulation();
 }

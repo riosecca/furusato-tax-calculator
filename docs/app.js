@@ -4,6 +4,52 @@ function formatYen(rawValue) {
     return `${safeValue.toLocaleString()}円`;
 }
 
+const SIMPLE_KEY = 'furusato-simple-session';
+const ADVANCED_KEY = 'furusato-advanced-session';
+function getStorage() {
+    if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
+        return null;
+    }
+    return window.localStorage;
+}
+function readState(key) {
+    const storage = getStorage();
+    if (!storage) {
+        return null;
+    }
+    try {
+        const raw = storage.getItem(key);
+        return raw ? JSON.parse(raw) : null;
+    }
+    catch (_a) {
+        return null;
+    }
+}
+function writeState(key, value) {
+    const storage = getStorage();
+    if (!storage) {
+        return;
+    }
+    try {
+        storage.setItem(key, JSON.stringify(value));
+    }
+    catch (_a) {
+        // Ignore quota errors or disabled storage.
+    }
+}
+function loadSimpleSessionState() {
+    return readState(SIMPLE_KEY);
+}
+function saveSimpleSessionState(state) {
+    writeState(SIMPLE_KEY, state);
+}
+function loadAdvancedSessionState() {
+    return readState(ADVANCED_KEY);
+}
+function saveAdvancedSessionState(state) {
+    writeState(ADVANCED_KEY, state);
+}
+
 function initTabs(buttonSelector = '.tab-button', panelSelector = '.panel') {
     if (typeof document === 'undefined') {
         return;
@@ -52,7 +98,14 @@ const familyAdjustments = {
     'couple-child': -15000,
     extended: -8000,
 };
+const defaultSimpleState = {
+    family: DEFAULT_SELECTIONS.family,
+    income: DEFAULT_SELECTIONS.income,
+    oneStop: false,
+    largeDeduction: false,
+};
 function initSimpleSimulator() {
+    var _a;
     if (typeof document === 'undefined') {
         return;
     }
@@ -66,33 +119,28 @@ function initSimpleSimulator() {
     }
     const getSelectedInput = (name) => document.querySelector(`input[name="${name}"]:checked`);
     const getSelectedValue = (name) => { var _a, _b; return (_b = (_a = getSelectedInput(name)) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : null; };
-    const getSelectedLabelText = (input) => {
-        var _a, _b;
-        if (!input) {
-            return '';
+    const setRadioValue = (name, value) => {
+        const target = document.querySelector(`input[name="${name}"][value="${value}"]`);
+        if (target) {
+            target.checked = true;
         }
-        const label = input.closest('label');
-        return label ? (_b = (_a = label.textContent) === null || _a === void 0 ? void 0 : _a.trim().replace(/\s+/g, ' ')) !== null && _b !== void 0 ? _b : '' : '';
+    };
+    const setCheckboxValue = (name, checked) => {
+        const target = document.querySelector(`input[name="${name}"]`);
+        if (target) {
+            target.checked = checked;
+        }
     };
     const updateResultCard = ({ amount, detail }) => {
         resultValue.textContent = amount;
         resultDetail.textContent = detail !== null && detail !== void 0 ? detail : '';
         resultNote.textContent = 'あなたの控除上限額（目安）は';
     };
-    const applyDefaultSelections = () => {
-        document
-            .querySelectorAll('input[type="radio"], input[type="checkbox"]')
-            .forEach((element) => {
-            const isFamilyDefault = element.name === 'family' && element.value === DEFAULT_SELECTIONS.family;
-            const isIncomeDefault = element.name === 'income' && element.value === DEFAULT_SELECTIONS.income;
-            if (element.type === 'checkbox') {
-                element.checked = false;
-            }
-            else if (element.type === 'radio') {
-                element.checked = isFamilyDefault || isIncomeDefault;
-            }
-        });
-        runSimpleSimulation();
+    const applyStateToInputs = (state) => {
+        setRadioValue('family', state.family);
+        setRadioValue('income', state.income);
+        setCheckboxValue('one-stop', state.oneStop);
+        setCheckboxValue('large-deduction', state.largeDeduction);
     };
     function runSimpleSimulation() {
         var _a, _b;
@@ -107,16 +155,20 @@ function initSimpleSimulator() {
             });
             return;
         }
+        const stateToSave = {
+            family: selectedFamily,
+            income: selectedIncome,
+            oneStop: hasOneStop,
+            largeDeduction: hasLargeDeduction,
+        };
+        saveSimpleSessionState(stateToSave);
         const incomeBase = (_a = baseEstimates[selectedIncome]) !== null && _a !== void 0 ? _a : 0;
         const adjustment = (_b = familyAdjustments[selectedFamily]) !== null && _b !== void 0 ? _b : 0;
         const deductionHit = hasLargeDeduction ? 8000 : 0;
         const oneStopBonus = hasOneStop ? 2000 : 0;
         const estimated = incomeBase + adjustment - deductionHit + oneStopBonus;
-        const incomeLabel = getSelectedLabelText(getSelectedInput('income'));
-        const familyLabel = getSelectedLabelText(getSelectedInput('family'));
         updateResultCard({
             amount: formatYen(estimated),
-            detail: '',
         });
     }
     calcButton === null || calcButton === void 0 ? void 0 : calcButton.addEventListener('click', runSimpleSimulation);
@@ -125,8 +177,13 @@ function initSimpleSimulator() {
         .forEach((element) => {
         element.addEventListener('change', runSimpleSimulation);
     });
-    resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener('click', applyDefaultSelections);
-    applyDefaultSelections();
+    resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener('click', () => {
+        applyStateToInputs(defaultSimpleState);
+        runSimpleSimulation();
+    });
+    const savedState = (_a = loadSimpleSessionState()) !== null && _a !== void 0 ? _a : defaultSimpleState;
+    applyStateToInputs(savedState);
+    runSimpleSimulation();
 }
 
 const ADV_BASIC_DEDUCTION = 480000;
@@ -143,6 +200,27 @@ const ADV_TAX_BRACKETS = [
     { min: 18000000, max: 40000000, rate: 0.4, deduction: 2796000 },
     { min: 40000000, max: Infinity, rate: 0.45, deduction: 4796000 },
 ];
+const ADVANCED_INPUT_IDS = [
+    'adv-income',
+    'adv-spouse-income',
+    'adv-listed',
+    'adv-unlisted',
+    'adv-has-spouse',
+    'adv-family-type',
+    'adv-dependents',
+    'adv-disabled',
+    'adv-special-self',
+    'adv-special-other',
+    'adv-social',
+    'adv-small-enterprise',
+    'adv-life',
+    'adv-earthquake',
+    'adv-medical',
+    'adv-housing',
+];
+function isAdvancedInput(element) {
+    return element instanceof HTMLInputElement || element instanceof HTMLSelectElement;
+}
 function initAdvancedSimulator() {
     if (typeof document === 'undefined') {
         return;
@@ -158,6 +236,32 @@ function initAdvancedSimulator() {
     if (!advancedValue || !advancedDetail || !advancedNote || !advancedFootnote) {
         return;
     }
+    const applyAdvancedState = (state) => {
+        if (!state) {
+            return;
+        }
+        ADVANCED_INPUT_IDS.forEach((id) => {
+            var _a;
+            const element = document.getElementById(id);
+            if (isAdvancedInput(element) && typeof state[id] === 'string') {
+                element.value = (_a = state[id]) !== null && _a !== void 0 ? _a : '';
+            }
+        });
+    };
+    const collectAdvancedState = () => {
+        const result = {};
+        ADVANCED_INPUT_IDS.forEach((id) => {
+            var _a;
+            const element = document.getElementById(id);
+            if (isAdvancedInput(element)) {
+                result[id] = (_a = element.value) !== null && _a !== void 0 ? _a : '';
+            }
+        });
+        return result;
+    };
+    const persistAdvancedState = () => {
+        saveAdvancedSessionState(collectAdvancedState());
+    };
     const parseAmount = (id) => {
         const element = document.getElementById(id);
         if (!(element instanceof HTMLInputElement)) {
@@ -200,6 +304,7 @@ function initAdvancedSimulator() {
         if (!needsSpouseIncome) {
             advancedSpouseIncome.value = '';
         }
+        persistAdvancedState();
     };
     const getFamilyText = (value) => {
         if (value === 'couple') {
@@ -273,15 +378,23 @@ function initAdvancedSimulator() {
         }
         calculateAdvanced();
     });
+    const persistOnInteraction = () => {
+        persistAdvancedState();
+    };
+    advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('input', persistOnInteraction);
+    advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('change', persistOnInteraction);
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('reset', () => {
         setTimeout(() => {
             resetAdvancedResult();
             handleSpouseRequirement();
+            persistAdvancedState();
         }, 0);
     });
     advancedSpouseSelect === null || advancedSpouseSelect === void 0 ? void 0 : advancedSpouseSelect.addEventListener('change', handleSpouseRequirement);
+    applyAdvancedState(loadAdvancedSessionState());
     handleSpouseRequirement();
     resetAdvancedResult();
+    persistAdvancedState();
 }
 
 function bootstrap() {

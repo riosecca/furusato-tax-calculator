@@ -1,4 +1,5 @@
 import { formatYen } from '../utils/currency.js';
+import { loadAdvancedSessionState, saveAdvancedSessionState, } from '../storage/session.js';
 const ADV_BASIC_DEDUCTION = 480000;
 const ADV_SPOUSE_DEDUCTION = 380000;
 const ADV_DEPENDENT_DEDUCTION = 380000;
@@ -13,6 +14,27 @@ const ADV_TAX_BRACKETS = [
     { min: 18000000, max: 40000000, rate: 0.4, deduction: 2796000 },
     { min: 40000000, max: Infinity, rate: 0.45, deduction: 4796000 },
 ];
+const ADVANCED_INPUT_IDS = [
+    'adv-income',
+    'adv-spouse-income',
+    'adv-listed',
+    'adv-unlisted',
+    'adv-has-spouse',
+    'adv-family-type',
+    'adv-dependents',
+    'adv-disabled',
+    'adv-special-self',
+    'adv-special-other',
+    'adv-social',
+    'adv-small-enterprise',
+    'adv-life',
+    'adv-earthquake',
+    'adv-medical',
+    'adv-housing',
+];
+function isAdvancedInput(element) {
+    return element instanceof HTMLInputElement || element instanceof HTMLSelectElement;
+}
 export function initAdvancedSimulator() {
     if (typeof document === 'undefined') {
         return;
@@ -28,6 +50,32 @@ export function initAdvancedSimulator() {
     if (!advancedValue || !advancedDetail || !advancedNote || !advancedFootnote) {
         return;
     }
+    const applyAdvancedState = (state) => {
+        if (!state) {
+            return;
+        }
+        ADVANCED_INPUT_IDS.forEach((id) => {
+            var _a;
+            const element = document.getElementById(id);
+            if (isAdvancedInput(element) && typeof state[id] === 'string') {
+                element.value = (_a = state[id]) !== null && _a !== void 0 ? _a : '';
+            }
+        });
+    };
+    const collectAdvancedState = () => {
+        const result = {};
+        ADVANCED_INPUT_IDS.forEach((id) => {
+            var _a;
+            const element = document.getElementById(id);
+            if (isAdvancedInput(element)) {
+                result[id] = (_a = element.value) !== null && _a !== void 0 ? _a : '';
+            }
+        });
+        return result;
+    };
+    const persistAdvancedState = () => {
+        saveAdvancedSessionState(collectAdvancedState());
+    };
     const parseAmount = (id) => {
         const element = document.getElementById(id);
         if (!(element instanceof HTMLInputElement)) {
@@ -70,6 +118,7 @@ export function initAdvancedSimulator() {
         if (!needsSpouseIncome) {
             advancedSpouseIncome.value = '';
         }
+        persistAdvancedState();
     };
     const getFamilyText = (value) => {
         if (value === 'couple') {
@@ -143,13 +192,21 @@ export function initAdvancedSimulator() {
         }
         calculateAdvanced();
     });
+    const persistOnInteraction = () => {
+        persistAdvancedState();
+    };
+    advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('input', persistOnInteraction);
+    advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('change', persistOnInteraction);
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('reset', () => {
         setTimeout(() => {
             resetAdvancedResult();
             handleSpouseRequirement();
+            persistAdvancedState();
         }, 0);
     });
     advancedSpouseSelect === null || advancedSpouseSelect === void 0 ? void 0 : advancedSpouseSelect.addEventListener('change', handleSpouseRequirement);
+    applyAdvancedState(loadAdvancedSessionState());
     handleSpouseRequirement();
     resetAdvancedResult();
+    persistAdvancedState();
 }

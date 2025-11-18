@@ -1,4 +1,9 @@
 import { formatYen } from '../utils/currency.js';
+import {
+  loadSimpleSessionState,
+  saveSimpleSessionState,
+  type SimpleSessionState,
+} from '../storage/session.js';
 
 const DEFAULT_SELECTIONS = {
   family: 'couple-child',
@@ -27,6 +32,13 @@ type ResultCard = {
   detail?: string;
 };
 
+const defaultSimpleState: SimpleSessionState = {
+  family: DEFAULT_SELECTIONS.family,
+  income: DEFAULT_SELECTIONS.income,
+  oneStop: false,
+  largeDeduction: false,
+};
+
 export function initSimpleSimulator(): void {
   if (typeof document === 'undefined') {
     return;
@@ -52,12 +64,22 @@ export function initSimpleSimulator(): void {
   const getSelectedValue = (name: string): string | null =>
     getSelectedInput(name)?.value ?? null;
 
-  const getSelectedLabelText = (input: HTMLInputElement | null): string => {
-    if (!input) {
-      return '';
+  const setRadioValue = (name: string, value: string) => {
+    const target = document.querySelector<HTMLInputElement>(
+      `input[name="${name}"][value="${value}"]`
+    );
+    if (target) {
+      target.checked = true;
     }
-    const label = input.closest('label');
-    return label ? label.textContent?.trim().replace(/\s+/g, ' ') ?? '' : '';
+  };
+
+  const setCheckboxValue = (name: string, checked: boolean) => {
+    const target = document.querySelector<HTMLInputElement>(
+      `input[name="${name}"]`
+    );
+    if (target) {
+      target.checked = checked;
+    }
   };
 
   const updateResultCard = ({ amount, detail }: ResultCard) => {
@@ -66,25 +88,11 @@ export function initSimpleSimulator(): void {
     resultNote.textContent = 'あなたの控除上限額（目安）は';
   };
 
-  const applyDefaultSelections = () => {
-    document
-      .querySelectorAll<HTMLInputElement>(
-        'input[type="radio"], input[type="checkbox"]'
-      )
-      .forEach((element) => {
-        const isFamilyDefault =
-          element.name === 'family' && element.value === DEFAULT_SELECTIONS.family;
-        const isIncomeDefault =
-          element.name === 'income' && element.value === DEFAULT_SELECTIONS.income;
-
-        if (element.type === 'checkbox') {
-          element.checked = false;
-        } else if (element.type === 'radio') {
-          element.checked = isFamilyDefault || isIncomeDefault;
-        }
-      });
-
-    runSimpleSimulation();
+  const applyStateToInputs = (state: SimpleSessionState) => {
+    setRadioValue('family', state.family);
+    setRadioValue('income', state.income);
+    setCheckboxValue('one-stop', state.oneStop);
+    setCheckboxValue('large-deduction', state.largeDeduction);
   };
 
   function runSimpleSimulation(): void {
@@ -105,18 +113,22 @@ export function initSimpleSimulator(): void {
       return;
     }
 
+    const stateToSave: SimpleSessionState = {
+      family: selectedFamily,
+      income: selectedIncome,
+      oneStop: hasOneStop,
+      largeDeduction: hasLargeDeduction,
+    };
+    saveSimpleSessionState(stateToSave);
+
     const incomeBase = baseEstimates[selectedIncome] ?? 0;
     const adjustment = familyAdjustments[selectedFamily] ?? 0;
     const deductionHit = hasLargeDeduction ? 8_000 : 0;
     const oneStopBonus = hasOneStop ? 2_000 : 0;
     const estimated = incomeBase + adjustment - deductionHit + oneStopBonus;
 
-    const incomeLabel = getSelectedLabelText(getSelectedInput('income'));
-    const familyLabel = getSelectedLabelText(getSelectedInput('family'));
-
     updateResultCard({
       amount: formatYen(estimated),
-      detail: '',
     });
   }
 
@@ -130,7 +142,12 @@ export function initSimpleSimulator(): void {
       element.addEventListener('change', runSimpleSimulation);
     });
 
-  resetButton?.addEventListener('click', applyDefaultSelections);
+  resetButton?.addEventListener('click', () => {
+    applyStateToInputs(defaultSimpleState);
+    runSimpleSimulation();
+  });
 
-  applyDefaultSelections();
+  const savedState = loadSimpleSessionState() ?? defaultSimpleState;
+  applyStateToInputs(savedState);
+  runSimpleSimulation();
 }
