@@ -30,6 +30,7 @@
       background: var(--bg-main);
       color: var(--text-main);
       -webkit-font-smoothing: antialiased;
+      padding-bottom: 96px;
     }
 
     .app {
@@ -273,7 +274,7 @@
     }
 
     .btn-primary {
-      background: linear-gradient(90deg, #ffb347, #ff8c68);
+      background: var(--accent);
       color: #fff;
       border: none;
       border-radius: 999px;
@@ -288,6 +289,7 @@
     .btn-primary:hover {
       transform: translateY(-1px);
       box-shadow: 0 14px 28px rgba(232, 108, 60, 0.28);
+      background: #d85c30;
     }
 
     .btn-secondary {
@@ -451,6 +453,97 @@
       font-size: 0.92rem;
     }
 
+    [data-simple-result="detail"][data-empty="true"],
+    [data-simple-result="detail"]:empty {
+      display: none;
+    }
+
+    .result-bar {
+      position: fixed;
+      inset: auto 0 0 0;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -12px 32px rgba(60, 58, 55, 0.08);
+      z-index: 50;
+    }
+
+    .result-bar__inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .result-bar__icon {
+      font-size: 1.8rem;
+    }
+
+    .result-bar__label {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .result-bar__value {
+      margin: 2px 0 0;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    .result-bar__content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .result-bar__detail {
+      margin-left: auto;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .result-bar__detail:empty {
+      display: none;
+    }
+
+    .result-bar__cta {
+      margin-left: auto;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: var(--shadow);
+      transition: opacity 120ms ease, transform 120ms ease;
+      white-space: nowrap;
+    }
+
+    .result-bar__cta:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 720px) {
+      .result-bar__inner {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .result-bar__detail,
+      .result-bar__cta {
+        margin-left: 0;
+      }
+
+      .result-bar__cta {
+        width: 100%;
+      }
+    }
+
     @media (max-width: 820px) {
       .layout {
         grid-template-columns: 1fr;
@@ -491,10 +584,10 @@
                 <span aria-hidden="true">📊</span>
                 あなたのシミュレーション結果
               </div>
-              <div class="result-body" id="simple-result">
-                <p class="result-note" id="result-note">あなたの控除上限額（目安）は</p>
-                <p class="result-value" id="result-value">-円</p>
-                <p class="result-note" id="result-detail"></p>
+              <div class="result-body">
+                <p class="result-note" data-simple-result="note">あなたの控除上限額（目安）は</p>
+                <p class="result-value" data-simple-result="value">-円</p>
+                <p class="result-note" data-simple-result="detail"></p>
               </div>
             </aside>
 
@@ -784,6 +877,18 @@
       </div>
     </section>
   </div>
+
+  <aside class="result-bar" aria-live="polite">
+    <div class="result-bar__inner">
+      <div class="result-bar__icon" aria-hidden="true">🧮</div>
+      <div class="result-bar__content">
+        <p class="result-bar__label" data-simple-result="note">あなたの控除上限額（目安）は</p>
+        <p class="result-bar__value" data-simple-result="value">-円</p>
+      </div>
+      <p class="result-bar__detail" data-simple-result="detail"></p>
+      <a class="result-bar__cta" href="#panel-advanced">詳細シミュレーションに進む</a>
+    </div>
+  </aside>
 
     <script defer src="./app.js"></script>
 

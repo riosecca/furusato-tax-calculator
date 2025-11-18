@@ -50,11 +50,17 @@ export function initSimpleSimulator(): void {
   const resetButton = document.getElementById(
     'btn-simple-reset'
   ) as HTMLButtonElement | null;
-  const resultValue = document.getElementById('result-value');
-  const resultDetail = document.getElementById('result-detail');
-  const resultNote = document.getElementById('result-note');
+  const resultValueTargets = document.querySelectorAll<HTMLElement>(
+    '[data-simple-result="value"]'
+  );
+  const resultDetailTargets = document.querySelectorAll<HTMLElement>(
+    '[data-simple-result="detail"]'
+  );
+  const resultNoteTargets = document.querySelectorAll<HTMLElement>(
+    '[data-simple-result="note"]'
+  );
 
-  if (!resultValue || !resultDetail || !resultNote) {
+  if (!resultValueTargets.length || !resultNoteTargets.length) {
     return;
   }
 
@@ -83,9 +89,16 @@ export function initSimpleSimulator(): void {
   };
 
   const updateResultCard = ({ amount, detail }: ResultCard) => {
-    resultValue.textContent = amount;
-    resultDetail.textContent = detail ?? '';
-    resultNote.textContent = 'あなたの控除上限額（目安）は';
+    resultValueTargets.forEach((target) => {
+      target.textContent = amount;
+    });
+    resultDetailTargets.forEach((target) => {
+      target.textContent = detail ?? '';
+      target.toggleAttribute('data-empty', !detail);
+    });
+    resultNoteTargets.forEach((target) => {
+      target.textContent = 'あなたの控除上限額（目安）は';
+    });
   };
 
   const applyStateToInputs = (state: SimpleSessionState) => {

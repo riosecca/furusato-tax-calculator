@@ -111,10 +111,10 @@ function initSimpleSimulator() {
     }
     const calcButton = document.getElementById('btn-simple-calc');
     const resetButton = document.getElementById('btn-simple-reset');
-    const resultValue = document.getElementById('result-value');
-    const resultDetail = document.getElementById('result-detail');
-    const resultNote = document.getElementById('result-note');
-    if (!resultValue || !resultDetail || !resultNote) {
+    const resultValueTargets = document.querySelectorAll('[data-simple-result="value"]');
+    const resultDetailTargets = document.querySelectorAll('[data-simple-result="detail"]');
+    const resultNoteTargets = document.querySelectorAll('[data-simple-result="note"]');
+    if (!resultValueTargets.length || !resultNoteTargets.length) {
         return;
     }
     const getSelectedInput = (name) => document.querySelector(`input[name="${name}"]:checked`);
@@ -132,9 +132,16 @@ function initSimpleSimulator() {
         }
     };
     const updateResultCard = ({ amount, detail }) => {
-        resultValue.textContent = amount;
-        resultDetail.textContent = detail !== null && detail !== void 0 ? detail : '';
-        resultNote.textContent = 'あなたの控除上限額（目安）は';
+        resultValueTargets.forEach((target) => {
+            target.textContent = amount;
+        });
+        resultDetailTargets.forEach((target) => {
+            target.textContent = detail !== null && detail !== void 0 ? detail : '';
+            target.toggleAttribute('data-empty', !detail);
+        });
+        resultNoteTargets.forEach((target) => {
+            target.textContent = 'あなたの控除上限額（目安）は';
+        });
     };
     const applyStateToInputs = (state) => {
         setRadioValue('family', state.family);
