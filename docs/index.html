@@ -225,7 +225,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
-    }
+
 
     .option-card {
       border: 1px solid var(--border);
@@ -587,193 +587,193 @@
       </div>
     </header>
 
-      <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
-        <div class="layout layout-simple">
-          <div class="simple-column">
-            <aside class="side-card">
-              <div class="result-title">
-                <span aria-hidden="true">📊</span>
-                あなたのシミュレーション結果
-              </div>
-              <div class="result-body">
-                <p class="result-note" data-simple-result="note">あなたの控除上限額（目安）は</p>
-                <p class="result-value" data-simple-result="value">-円</p>
-                <p class="result-note" data-simple-result="detail"></p>
-              </div>
-            </aside>
+    <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
+      <div class="layout layout-simple">
+        <div class="simple-column">
+          <aside class="side-card">
+            <div class="result-title">
+              <span aria-hidden="true">📊</span>
+              あなたのシミュレーション結果
+            </div>
+            <div class="result-body">
+              <p class="result-note" data-simple-result="note">あなたの控除上限額（目安）は</p>
+              <p class="result-value" data-simple-result="value">-円</p>
+              <p class="result-note" data-simple-result="detail"></p>
+            </div>
+          </aside>
 
-            <section class="card">
-              <div class="section-title">かんたんシミュレーション</div>
+          <section class="card">
+            <div class="section-title">かんたんシミュレーション</div>
 
-              <div class="steps">
-                <div class="step">
-                  <div class="step-header">
-                    <span class="step-number">STEP.1</span>
-                    <span>家族構成を選択する</span>
-                  </div>
-                  <div class="option-grid">
-                    <label class="option-card">
-                      <input type="radio" name="family" value="couple-child" checked />
-                      <div>
-                        <span>夫婦</span>
-                        <small>こどもがいる</small>
-                      </div>
-                    </label>
-                    <label class="option-card">
-                      <input type="radio" name="family" value="couple" />
-                      <div>
-                        <span>夫婦で配偶者控除を受ける</span>
-                        <small>こどもがいない</small>
-                      </div>
-                    </label>
-                    <label class="option-card">
-                      <input type="radio" name="family" value="single" />
-                      <div>
-                        <span>単身、もしくは共働き（配偶者控除がない）</span>
-                      </div>
-                    </label>
-                    <label class="option-card">
-                      <input type="radio" name="family" value="extended" />
-                      <div>
-                        <span>他の扶養親族がいる（家族のみ）</span>
-                      </div>
-                    </label>
-                  </div>
+            <div class="steps">
+              <div class="step">
+                <div class="step-header">
+                  <span class="step-number">STEP.1</span>
+                  <span>家族構成を選択する</span>
                 </div>
-              </div>
-
-              <div class="actions simple-actions">
-                <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
-                <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
-              </div>
-            </section>
-          </div>
-
-          <section class="card simple-side-card">
-            <div class="step">
-              <div class="step-header">
-                <span class="step-number">STEP.2</span>
-                <span>年収（所得）</span>
-              </div>
-              <div class="option-grid option-grid-income">
-                <label class="option-card">
-                  <input type="radio" name="income" value="150" />
-                  <div>
-                    <span>150万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="200" />
-                  <div>
-                    <span>200万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="300" />
-                  <div>
-                    <span>300万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="400" />
-                  <div>
-                    <span>400万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="500" />
-                  <div>
-                    <span>500万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="600" />
-                  <div>
-                    <span>600万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="700" checked />
-                  <div>
-                    <span>700万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="800" />
-                  <div>
-                    <span>800万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="900" />
-                  <div>
-                    <span>900万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="1000" />
-                  <div>
-                    <span>1,000万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="1200" />
-                  <div>
-                    <span>1,200万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="1500" />
-                  <div>
-                    <span>1,500万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="2000" />
-                  <div>
-                    <span>2,000万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="3000" />
-                  <div>
-                    <span>3,000万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="5000" />
-                  <div>
-                    <span>5,000万</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="income" value="10000" />
-                  <div>
-                    <span>1億</span>
-                  </div>
-                </label>
+                <div class="option-grid">
+                  <label class="option-card">
+                    <input type="radio" name="family" value="couple-child" checked />
+                    <div>
+                      <span>夫婦</span>
+                      <small>こどもがいる</small>
+                    </div>
+                  </label>
+                  <label class="option-card">
+                    <input type="radio" name="family" value="couple" />
+                    <div>
+                      <span>夫婦で配偶者控除を受ける</span>
+                      <small>こどもがいない</small>
+                    </div>
+                  </label>
+                  <label class="option-card">
+                    <input type="radio" name="family" value="single" />
+                    <div>
+                      <span>単身、もしくは共働き（配偶者控除がない）</span>
+                    </div>
+                  </label>
+                  <label class="option-card">
+                    <input type="radio" name="family" value="extended" />
+                    <div>
+                      <span>他の扶養親族がいる（家族のみ）</span>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
 
-            <div class="step">
-              <div class="step-header">
-                <span class="step-number">STEP.3</span>
-                <span>その他（任意）</span>
-              </div>
-              <div class="steps">
-                <label class="checkbox-row">
-                  <input type="checkbox" name="one-stop" />
-                  <span>ワンストップ特例の寄附のみ</span>
-                </label>
-                <label class="checkbox-row">
-                  <input type="checkbox" name="large-deduction" />
-                  <span>今年、医療費控除や住宅ローン控除などの金額がある</span>
-                </label>
-              </div>
+            <div class="actions simple-actions">
+              <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
+              <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
             </div>
           </section>
         </div>
-      </main>
+
+        <section class="card simple-side-card">
+          <div class="step">
+            <div class="step-header">
+              <span class="step-number">STEP.2</span>
+              <span>年収（所得）</span>
+            </div>
+            <div class="option-grid option-grid-income">
+              <label class="option-card">
+                <input type="radio" name="income" value="150" />
+                <div>
+                  <span>150万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="200" />
+                <div>
+                  <span>200万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="300" />
+                <div>
+                  <span>300万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="400" />
+                <div>
+                  <span>400万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="500" />
+                <div>
+                  <span>500万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="600" />
+                <div>
+                  <span>600万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="700" checked />
+                <div>
+                  <span>700万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="800" />
+                <div>
+                  <span>800万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="900" />
+                <div>
+                  <span>900万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="1000" />
+                <div>
+                  <span>1,000万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="1200" />
+                <div>
+                  <span>1,200万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="1500" />
+                <div>
+                  <span>1,500万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="2000" />
+                <div>
+                  <span>2,000万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="3000" />
+                <div>
+                  <span>3,000万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="5000" />
+                <div>
+                  <span>5,000万</span>
+                </div>
+              </label>
+              <label class="option-card">
+                <input type="radio" name="income" value="10000" />
+                <div>
+                  <span>1億</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-header">
+              <span class="step-number">STEP.3</span>
+              <span>その他（任意）</span>
+            </div>
+            <div class="steps">
+              <label class="checkbox-row">
+                <input type="checkbox" name="one-stop" />
+                <span>ワンストップ特例の寄附のみ</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" name="large-deduction" />
+                <span>今年、医療費控除や住宅ローン控除などの金額がある</span>
+              </label>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
 
     <section class="panel" id="panel-advanced" aria-labelledby="tab-advanced" hidden>
       <div class="layout">
@@ -955,7 +955,7 @@
     </div>
   </aside>
 
-    <script defer src="./app.js"></script>
+  <script defer src="./app.js"></script>
 
 </body>
 
