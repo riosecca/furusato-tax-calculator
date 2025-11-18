@@ -217,13 +217,23 @@
     }
 
     .option-grid.option-grid-income {
+      display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
     }
 
-    @media (max-width: 600px) {
-      .option-grid.option-grid-income {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    .option-grid.option-grid-income .option-card {
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .option-grid.option-grid-income .option-card span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+      text-align: center;
+      font-size: 0.95rem;
     }
 
 
@@ -568,6 +578,7 @@
 </head>
 
 <body>
+  <a href="https://riosecca.github.io/furusato-tax-calculator/">リンク</a>
   <div class="app">
     <header class="app-header">
       <h1 class="app-title">ふるさと納税シミュレーション</h1>
