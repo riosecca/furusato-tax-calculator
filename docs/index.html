@@ -846,7 +846,7 @@
       });
     }
 
-    calcButton?.addEventListener('click', () => {
+    function runSimpleSimulation() {
       const selectedFamily = getSelectedValue('family');
       const selectedIncome = getSelectedValue('income');
       const hasOneStop = Boolean(document.querySelector('input[name="one-stop"]:checked'));
@@ -880,6 +880,14 @@
         amount: formatYen(estimated),
         detail: `${familyLabel}・${incomeLabel} をもとにしたざっくり試算です`,
       });
+    }
+
+    // ボタンでも計算できるようにしておく
+    calcButton?.addEventListener('click', runSimpleSimulation);
+
+    // 入力欄の変更で自動計算
+    document.querySelectorAll('input[name="family"], input[name="income"], input[name="one-stop"], input[name="large-deduction"]').forEach((el) => {
+      el.addEventListener('change', runSimpleSimulation);
     });
 
     resetButton?.addEventListener('click', () => {
