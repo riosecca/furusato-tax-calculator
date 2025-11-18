@@ -492,21 +492,14 @@
                 あなたのシミュレーション結果
               </div>
               <div class="result-body" id="simple-result">
-                <p class="result-note">あなたの控除上限額（目安）は</p>
-                <p class="result-value" id="simple-amount">-円</p>
-                <p class="result-note">家族構成と収入を選択すると目安が表示されます</p>
-              </div>
-              <div class="result-footer">
-                ※控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
+                <p class="result-note" id="result-note">あなたの控除上限額（目安）は</p>
+                <p class="result-value" id="result-value">-円</p>
+                <p class="result-note" id="result-detail"></p>
               </div>
             </aside>
 
             <section class="card">
               <div class="section-title">かんたんシミュレーション</div>
-              <p class="section-desc">
-                以下の項目をもとに本日の控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
-              </p>
-              <div class="pill-note">家族構成と年収だけ入力すると目安金額が出ます</div>
 
               <div class="steps">
                 <div class="step">
@@ -544,15 +537,15 @@
                   </div>
                 </div>
               </div>
+
+              <div class="actions simple-actions">
+                <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
+                <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
+              </div>
             </section>
           </div>
 
           <section class="card simple-side-card">
-            <div class="actions simple-actions">
-              <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
-              <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
-            </div>
-
             <div class="step">
               <div class="step-header">
                 <span class="step-number">STEP.2</span>
@@ -882,7 +875,7 @@
 
       updateResultCard({
         amount: '−円',
-        detail: '家族構成と収入を選択すると目安が表示されます',
+        detail: '',
       });
     }
 
@@ -897,7 +890,7 @@
       if (!selectedFamily || !selectedIncome) {
         updateResultCard({
           amount: '−円',
-          detail: '家族構成と収入の両方を選択してください',
+          detail: '条件を選択してください',
         });
         return;
       }
