@@ -2,7 +2,7 @@
   "name": "furusato-tax-calculator",
   "version": "1.0.0",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && node ./scripts/bundle-ui.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
