@@ -216,6 +216,17 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
 
+    .option-grid.option-grid-income {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    @media (max-width: 600px) {
+      .option-grid.option-grid-income {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    }
+
     .option-card {
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -644,47 +655,101 @@
                 <span class="step-number">STEP.2</span>
                 <span>年収（所得）</span>
               </div>
-              <div class="option-grid">
+              <div class="option-grid option-grid-income">
                 <label class="option-card">
                   <input type="radio" name="income" value="150" />
                   <div>
-                    <span>150万円</span>
+                    <span>150万</span>
                   </div>
                 </label>
                 <label class="option-card">
                   <input type="radio" name="income" value="200" />
                   <div>
-                    <span>200万円</span>
+                    <span>200万</span>
                   </div>
                 </label>
                 <label class="option-card">
                   <input type="radio" name="income" value="300" />
                   <div>
-                    <span>300万円</span>
+                    <span>300万</span>
                   </div>
                 </label>
                 <label class="option-card">
                   <input type="radio" name="income" value="400" />
                   <div>
-                    <span>400万円</span>
+                    <span>400万</span>
                   </div>
                 </label>
                 <label class="option-card">
-                  <input type="radio" name="income" value="700" />
+                  <input type="radio" name="income" value="500" />
                   <div>
-                    <span>700万円</span>
+                    <span>500万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="600" />
+                  <div>
+                    <span>600万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="700" checked />
+                  <div>
+                    <span>700万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="800" />
+                  <div>
+                    <span>800万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="900" />
+                  <div>
+                    <span>900万</span>
                   </div>
                 </label>
                 <label class="option-card">
                   <input type="radio" name="income" value="1000" />
                   <div>
-                    <span>1,000万円</span>
+                    <span>1,000万</span>
                   </div>
                 </label>
                 <label class="option-card">
                   <input type="radio" name="income" value="1200" />
                   <div>
-                    <span>1,200万円</span>
+                    <span>1,200万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="1500" />
+                  <div>
+                    <span>1,500万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="2000" />
+                  <div>
+                    <span>2,000万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="3000" />
+                  <div>
+                    <span>3,000万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="5000" />
+                  <div>
+                    <span>5,000万</span>
+                  </div>
+                </label>
+                <label class="option-card">
+                  <input type="radio" name="income" value="10000" />
+                  <div>
+                    <span>1億</span>
                   </div>
                 </label>
               </div>
