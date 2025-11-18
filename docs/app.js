@@ -76,13 +76,8 @@ function initSimpleSimulator() {
     };
     const updateResultCard = ({ amount, detail }) => {
         resultValue.textContent = amount;
-        resultDetail.textContent = detail;
+        resultDetail.textContent = detail !== null && detail !== void 0 ? detail : '';
         resultNote.textContent = 'あなたの控除上限額（目安）は';
-    };
-    const resetResultCard = () => {
-        resultNote.textContent = '入力すると控除上限額（目安）を計算します';
-        resultValue.textContent = '−円';
-        resultDetail.textContent = '';
     };
     const applyDefaultSelections = () => {
         document
@@ -97,9 +92,9 @@ function initSimpleSimulator() {
                 element.checked = isFamilyDefault || isIncomeDefault;
             }
         });
-        resetResultCard();
+        runSimpleSimulation();
     };
-    const runSimpleSimulation = () => {
+    function runSimpleSimulation() {
         var _a, _b;
         const selectedFamily = getSelectedValue('family');
         const selectedIncome = getSelectedValue('income');
@@ -121,9 +116,9 @@ function initSimpleSimulator() {
         const familyLabel = getSelectedLabelText(getSelectedInput('family'));
         updateResultCard({
             amount: formatYen(estimated),
-            detail: `${familyLabel}・${incomeLabel} をもとにしたざっくり試算です`,
+            detail: '',
         });
-    };
+    }
     calcButton === null || calcButton === void 0 ? void 0 : calcButton.addEventListener('click', runSimpleSimulation);
     document
         .querySelectorAll('input[name="family"], input[name="income"], input[name="one-stop"], input[name="large-deduction"]')

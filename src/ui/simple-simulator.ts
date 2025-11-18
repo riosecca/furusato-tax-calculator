@@ -24,7 +24,7 @@ const familyAdjustments: Record<string, number> = {
 
 type ResultCard = {
   amount: string;
-  detail: string;
+  detail?: string;
 };
 
 export function initSimpleSimulator(): void {
@@ -62,14 +62,8 @@ export function initSimpleSimulator(): void {
 
   const updateResultCard = ({ amount, detail }: ResultCard) => {
     resultValue.textContent = amount;
-    resultDetail.textContent = detail;
+    resultDetail.textContent = detail ?? '';
     resultNote.textContent = 'あなたの控除上限額（目安）は';
-  };
-
-  const resetResultCard = () => {
-    resultNote.textContent = '入力すると控除上限額（目安）を計算します';
-    resultValue.textContent = '−円';
-    resultDetail.textContent = '';
   };
 
   const applyDefaultSelections = () => {
@@ -90,10 +84,10 @@ export function initSimpleSimulator(): void {
         }
       });
 
-    resetResultCard();
+    runSimpleSimulation();
   };
 
-  const runSimpleSimulation = () => {
+  function runSimpleSimulation(): void {
     const selectedFamily = getSelectedValue('family');
     const selectedIncome = getSelectedValue('income');
     const hasOneStop = Boolean(
@@ -122,9 +116,9 @@ export function initSimpleSimulator(): void {
 
     updateResultCard({
       amount: formatYen(estimated),
-      detail: `${familyLabel}・${incomeLabel} をもとにしたざっくり試算です`,
+      detail: '',
     });
-  };
+  }
 
   calcButton?.addEventListener('click', runSimpleSimulation);
 
