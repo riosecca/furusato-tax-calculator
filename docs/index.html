@@ -104,6 +104,42 @@
       gap: 16px;
     }
 
+    .layout.layout-simple {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .simple-column {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .simple-side-card {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .simple-actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .simple-actions .btn-primary,
+    .simple-actions .btn-secondary {
+      width: 100%;
+    }
+
+    @media (min-width: 960px) {
+      .layout.layout-simple {
+        grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.4fr);
+        align-items: start;
+      }
+    }
+
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -447,49 +483,74 @@
       </div>
     </header>
 
-    <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
-      <div class="layout">
-        <section class="card">
-          <div class="section-title">かんたんシミュレーション</div>
-          <p class="section-desc">
-            以下の項目をもとに本日の控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
-          </p>
-          <div class="pill-note">家族構成と年収だけ入力すると目安金額が出ます</div>
+      <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
+        <div class="layout layout-simple">
+          <div class="simple-column">
+            <aside class="side-card">
+              <div class="result-title">
+                <span aria-hidden="true">📊</span>
+                あなたのシミュレーション結果
+              </div>
+              <div class="result-body" id="simple-result">
+                <p class="result-note">あなたの控除上限額（目安）は</p>
+                <p class="result-value" id="simple-amount">-円</p>
+                <p class="result-note">家族構成と収入を選択すると目安が表示されます</p>
+              </div>
+              <div class="result-footer">
+                ※控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
+              </div>
+            </aside>
 
-          <div class="steps">
-            <div class="step">
-              <div class="step-header">
-                <span class="step-number">STEP.1</span>
-                <span>家族構成を選択する</span>
+            <section class="card">
+              <div class="section-title">かんたんシミュレーション</div>
+              <p class="section-desc">
+                以下の項目をもとに本日の控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
+              </p>
+              <div class="pill-note">家族構成と年収だけ入力すると目安金額が出ます</div>
+
+              <div class="steps">
+                <div class="step">
+                  <div class="step-header">
+                    <span class="step-number">STEP.1</span>
+                    <span>家族構成を選択する</span>
+                  </div>
+                  <div class="option-grid">
+                    <label class="option-card">
+                      <input type="radio" name="family" value="couple-child" checked />
+                      <div>
+                        <span>夫婦</span>
+                        <small>こどもがいる</small>
+                      </div>
+                    </label>
+                    <label class="option-card">
+                      <input type="radio" name="family" value="couple" />
+                      <div>
+                        <span>夫婦で配偶者控除を受ける</span>
+                        <small>こどもがいない</small>
+                      </div>
+                    </label>
+                    <label class="option-card">
+                      <input type="radio" name="family" value="single" />
+                      <div>
+                        <span>単身、もしくは共働き（配偶者控除がない）</span>
+                      </div>
+                    </label>
+                    <label class="option-card">
+                      <input type="radio" name="family" value="extended" />
+                      <div>
+                        <span>他の扶養親族がいる（家族のみ）</span>
+                      </div>
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div class="option-grid">
-                <label class="option-card">
-                  <input type="radio" name="family" value="couple-child" checked />
-                  <div>
-                    <span>夫婦</span>
-                    <small>こどもがいる</small>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="family" value="couple" />
-                  <div>
-                    <span>夫婦で配偶者控除を受ける</span>
-                    <small>こどもがいない</small>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="family" value="single" />
-                  <div>
-                    <span>単身、もしくは共働き（配偶者控除がない）</span>
-                  </div>
-                </label>
-                <label class="option-card">
-                  <input type="radio" name="family" value="extended" />
-                  <div>
-                    <span>他の扶養親族がいる（家族のみ）</span>
-                  </div>
-                </label>
-              </div>
+            </section>
+          </div>
+
+          <section class="card simple-side-card">
+            <div class="actions simple-actions">
+              <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
+              <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
             </div>
 
             <div class="step">
@@ -566,30 +627,9 @@
                 </label>
               </div>
             </div>
-          </div>
-
-          <div class="actions">
-            <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
-            <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
-          </div>
-        </section>
-
-        <aside class="side-card">
-          <div class="result-title">
-            <span aria-hidden="true">🏔️</span>
-            あなたのシミュレーション結果
-          </div>
-          <div class="result-body" id="result-card">
-            <p class="result-note" id="result-note">あなたの控除上限額（目安）は</p>
-            <p class="result-value" id="result-value">−<span>円</span></p>
-            <p class="result-note" id="result-detail">家族構成と収入を選択してください</p>
-          </div>
-          <div class="result-footer">
-            ※控除上限額の目安を表示します。ご自身の正確な控除額が知りたい場合は、控除上限額の目安シミュレーションをご利用ください。
-          </div>
-        </aside>
-      </div>
-    </main>
+          </section>
+        </div>
+      </main>
 
     <section class="panel" id="panel-advanced" aria-labelledby="tab-advanced" hidden>
       <div class="layout">
