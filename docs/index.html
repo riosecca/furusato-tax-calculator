@@ -136,8 +136,16 @@
 
     @media (min-width: 960px) {
       .layout.layout-simple {
-        grid-template-columns: minmax(0, 0.6fr) minmax(0, 0.4fr);
+        grid-template-columns: minmax(0, 0.52fr) minmax(0, 0.48fr);
         align-items: start;
+      }
+
+      .simple-side-card {
+        min-width: 440px;
+      }
+
+      .about-easysimulator-form-radiobutton__list {
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
       }
     }
 
@@ -223,7 +231,7 @@
     }
 
     .option-grid.option-grid-income .option-card {
-      justify-content: center;
+      justify-content: flex-start;
       min-width: 0;
     }
 
@@ -232,7 +240,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       display: block;
-      text-align: center;
+      text-align: left;
       font-size: 0.95rem;
     }
 
@@ -270,6 +278,76 @@
       accent-color: var(--accent);
       width: 18px;
       height: 18px;
+    }
+
+    .about-easysimulator-form-radiobutton__box {
+      margin-top: 4px;
+      width: 100%;
+    }
+
+    .about-easysimulator-form-radiobutton__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .about-easysimulator-form-radiobutton__list li {
+      margin: 0;
+    }
+
+    .frm-radio {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: #fff;
+      height: 100%;
+      min-width: 0;
+      justify-content: center;
+    }
+
+    .frm-radio__input {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .frm-radio__text {
+      font-weight: 600;
+      color: var(--text-main);
+      flex: 1 1 8ch;
+      min-width: 0;
+      text-align: center;
+      white-space: nowrap;
+      padding: 0 4px;
+      font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+    }
+
+    @media (max-width: 520px) {
+      .about-easysimulator-form-radiobutton__list {
+        gap: 6px;
+      }
+
+      .frm-radio {
+        gap: 6px;
+        padding: 8px 10px;
+      }
+
+      .frm-radio__input {
+        width: 14px;
+        height: 14px;
+      }
+
+      .frm-radio__text {
+        font-size: clamp(0.75rem, 2vw, 0.85rem);
+        flex: 1 1 6.5ch;
+      }
     }
 
     .checkbox-row {
@@ -666,103 +744,105 @@
               <span class="step-number">STEP.2</span>
               <span>年収（所得）</span>
             </div>
-            <div class="option-grid option-grid-income">
-              <label class="option-card">
-                <input type="radio" name="income" value="150" />
-                <div>
-                  <span>150万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="200" />
-                <div>
-                  <span>200万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="300" />
-                <div>
-                  <span>300万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="400" />
-                <div>
-                  <span>400万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="500" />
-                <div>
-                  <span>500万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="600" />
-                <div>
-                  <span>600万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="700" checked />
-                <div>
-                  <span>700万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="800" />
-                <div>
-                  <span>800万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="900" />
-                <div>
-                  <span>900万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="1000" />
-                <div>
-                  <span>1,000万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="1200" />
-                <div>
-                  <span>1,200万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="1500" />
-                <div>
-                  <span>1,500万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="2000" />
-                <div>
-                  <span>2,000万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="3000" />
-                <div>
-                  <span>3,000万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="5000" />
-                <div>
-                  <span>5,000万</span>
-                </div>
-              </label>
-              <label class="option-card">
-                <input type="radio" name="income" value="10000" />
-                <div>
-                  <span>1億</span>
-                </div>
-              </label>
+            <div class="about-easysimulator-form-radiobutton__box -income">
+              <ul class="about-easysimulator-form-radiobutton__list">
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="150" />
+                    <span class="frm-radio__text">150万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="200" />
+                    <span class="frm-radio__text">200万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="300" />
+                    <span class="frm-radio__text">300万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="400" />
+                    <span class="frm-radio__text">400万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="500" />
+                    <span class="frm-radio__text">500万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="600" />
+                    <span class="frm-radio__text">600万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="700" checked />
+                    <span class="frm-radio__text">700万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="800" />
+                    <span class="frm-radio__text">800万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="900" />
+                    <span class="frm-radio__text">900万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="1000" />
+                    <span class="frm-radio__text">1,000万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="1200" />
+                    <span class="frm-radio__text">1,200万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="1500" />
+                    <span class="frm-radio__text">1,500万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="2000" />
+                    <span class="frm-radio__text">2,000万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="3000" />
+                    <span class="frm-radio__text">3,000万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="5000" />
+                    <span class="frm-radio__text">5,000万</span>
+                  </label>
+                </li>
+                <li>
+                  <label class="frm-radio">
+                    <input type="radio" class="frm-radio__input" name="income" value="10000" />
+                    <span class="frm-radio__text">1億</span>
+                  </label>
+                </li>
+              </ul>
             </div>
           </div>
 
