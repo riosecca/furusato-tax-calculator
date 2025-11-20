@@ -27,6 +27,8 @@ const baseEstimates: Record<string, number> = {
   3000: 620_000,
   5000: 1_050_000,
   10000: 2_100_000,
+  20000: 4_200_000,
+  30000: 6_300_000,
 };
 
 const familyAdjustments: Record<string, number> = {
@@ -35,6 +37,18 @@ const familyAdjustments: Record<string, number> = {
   'couple-child': -15_000,
   extended: -8_000,
 };
+
+const MAN_YEN = 10_000;
+const BASIC_DEDUCTION = 480_000;
+const SPOUSE_DEDUCTION = 380_000;
+const DEPENDENT_DEDUCTION = 380_000;
+const NON_TAXABLE_THRESHOLD = 10_000;
+const SOCIAL_INSURANCE_ESTIMATES = [
+  { max: 2_000_000, rate: 0.24 },
+  { max: 4_000_000, rate: 0.2 },
+  { max: 7_000_000, rate: 0.18 },
+  { max: Number.POSITIVE_INFINITY, rate: 0.16 },
+] as const;
 
 type ResultCard = {
   amount: string;
@@ -117,6 +131,68 @@ export function initSimpleSimulator(): void {
     setCheckboxValue('large-deduction', state.largeDeduction);
   };
 
+  const hasSpouseDeduction = (family: string): boolean =>
+    family === 'couple' || family === 'couple-child';
+
+  const hasDependentDeduction = (family: string): boolean =>
+    family === 'couple-child';
+
+  const toAnnualIncome = (selection: string): number => {
+    const numericValue = Number(selection);
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
+      return 0;
+    }
+    return numericValue * MAN_YEN;
+  };
+
+  const getSalaryDeduction = (annualIncome: number): number => {
+    if (annualIncome <= 0) {
+      return 0;
+    }
+    if (annualIncome <= 1_625_000) {
+      return 550_000;
+    }
+    if (annualIncome <= 1_800_000) {
+      return annualIncome * 0.4 - 100_000;
+    }
+    if (annualIncome <= 3_600_000) {
+      return annualIncome * 0.3 + 80_000;
+    }
+    if (annualIncome <= 6_600_000) {
+      return annualIncome * 0.2 + 440_000;
+    }
+    if (annualIncome <= 8_500_000) {
+      return annualIncome * 0.1 + 1_100_000;
+    }
+    return 1_950_000;
+  };
+
+  const calculateSalaryIncome = (annualIncome: number): number => {
+    const deduction = getSalaryDeduction(annualIncome);
+    return Math.max(annualIncome - deduction, 0);
+  };
+
+  const estimateSocialInsurance = (annualIncome: number): number => {
+    const bracket =
+      SOCIAL_INSURANCE_ESTIMATES.find(({ max }) => annualIncome <= max) ??
+      SOCIAL_INSURANCE_ESTIMATES[SOCIAL_INSURANCE_ESTIMATES.length - 1];
+    return Math.max(Math.round(annualIncome * bracket.rate), 0);
+  };
+
+  const calculateResidentTaxableIncome = (
+    family: string,
+    annualIncome: number
+  ): number => {
+    const salaryIncome = calculateSalaryIncome(annualIncome);
+    const socialInsurance = estimateSocialInsurance(annualIncome);
+    const deductions =
+      BASIC_DEDUCTION +
+      socialInsurance +
+      (hasSpouseDeduction(family) ? SPOUSE_DEDUCTION : 0) +
+      (hasDependentDeduction(family) ? DEPENDENT_DEDUCTION : 0);
+    return salaryIncome - deductions;
+  };
+
   function runSimpleSimulation(): void {
     const selectedFamily = getSelectedValue('family');
     const selectedIncome = getSelectedValue('income');
@@ -142,6 +218,20 @@ export function initSimpleSimulator(): void {
       largeDeduction: hasLargeDeduction,
     };
     saveSimpleSessionState(stateToSave);
+
+    const annualIncome = toAnnualIncome(selectedIncome);
+    const taxableIncome = calculateResidentTaxableIncome(
+      selectedFamily,
+      annualIncome
+    );
+
+    if (taxableIncome <= NON_TAXABLE_THRESHOLD) {
+      updateResultCard({
+        amount: formatYen(0),
+        detail: '住民税が非課税ラインのため、上限額は0円です。',
+      });
+      return;
+    }
 
     const incomeBase = baseEstimates[selectedIncome] ?? 0;
     const adjustment = familyAdjustments[selectedFamily] ?? 0;
