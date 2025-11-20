@@ -23,6 +23,12 @@ export function initTabs(buttonSelector = '.tab-button', panelSelector = '.panel
                     panel.setAttribute('hidden', 'true');
                 }
             });
+            const eventDetail = { id: targetId !== null && targetId !== void 0 ? targetId : null };
+            document.dispatchEvent(new CustomEvent('tab:changed', { detail: eventDetail }));
         });
     });
+}
+export function activateTab(targetId, buttonSelector = '.tab-button') {
+    const button = document.querySelector(`${buttonSelector}[data-target="${targetId}"]`);
+    button === null || button === void 0 ? void 0 : button.click();
 }

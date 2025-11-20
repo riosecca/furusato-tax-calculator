@@ -31,6 +31,19 @@ export function initTabs(
           panel.setAttribute('hidden', 'true');
         }
       });
+
+      const eventDetail = { id: targetId ?? null };
+      document.dispatchEvent(new CustomEvent('tab:changed', { detail: eventDetail }));
     });
   });
+}
+
+export function activateTab(
+  targetId: string,
+  buttonSelector = '.tab-button'
+): void {
+  const button = document.querySelector<HTMLButtonElement>(
+    `${buttonSelector}[data-target="${targetId}"]`
+  );
+  button?.click();
 }

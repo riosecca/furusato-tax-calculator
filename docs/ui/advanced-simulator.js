@@ -1,5 +1,6 @@
 import { formatYen } from '../utils/currency.js';
 import { loadAdvancedSessionState, saveAdvancedSessionState, } from '../storage/session.js';
+import { loadSimpleSessionState } from '../storage/session.js';
 const ADV_BASIC_DEDUCTION = 480000;
 const ADV_SPOUSE_DEDUCTION = 380000;
 const ADV_DEPENDENT_DEDUCTION = 380000;
@@ -35,6 +36,21 @@ const ADVANCED_INPUT_IDS = [
 function isAdvancedInput(element) {
     return element instanceof HTMLInputElement || element instanceof HTMLSelectElement;
 }
+function buildAdvancedPreset(simpleState) {
+    if (!simpleState) {
+        return {};
+    }
+    const income = Number(simpleState.income);
+    const hasSpouse = simpleState.family !== 'single';
+    const hasDependents = simpleState.family === 'couple-child' || simpleState.family === 'extended';
+    return {
+        'adv-income': Number.isFinite(income) ? String(Math.max(Math.round(income * 10000), 0)) : '',
+        'adv-spouse-income': hasSpouse ? '0' : '',
+        'adv-has-spouse': hasSpouse ? 'has' : 'none',
+        'adv-family-type': simpleState.family === 'couple' || simpleState.family === 'couple-child' ? 'couple' : 'none',
+        'adv-dependents': hasDependents ? '1' : '0',
+    };
+}
 export function initAdvancedSimulator() {
     if (typeof document === 'undefined') {
         return;
@@ -50,7 +66,13 @@ export function initAdvancedSimulator() {
     if (!advancedValue || !advancedDetail || !advancedNote || !advancedFootnote) {
         return;
     }
-    const applyAdvancedState = (state) => {
+    const clearAutofillFlag = (event) => {
+        const target = event.target;
+        if (isAdvancedInput(target)) {
+            target.dataset.autofill = 'manual';
+        }
+    };
+    const applyAdvancedState = (state, { preferExisting = false } = {}) => {
         if (!state) {
             return;
         }
@@ -58,6 +80,9 @@ export function initAdvancedSimulator() {
             var _a;
             const element = document.getElementById(id);
             if (isAdvancedInput(element) && typeof state[id] === 'string') {
+                if (preferExisting && element.value !== '') {
+                    return;
+                }
                 element.value = (_a = state[id]) !== null && _a !== void 0 ? _a : '';
             }
         });
@@ -75,6 +100,30 @@ export function initAdvancedSimulator() {
     };
     const persistAdvancedState = () => {
         saveAdvancedSessionState(collectAdvancedState());
+    };
+    const applySimplePreset = (simpleState) => {
+        if (!simpleState) {
+            return;
+        }
+        const preset = buildAdvancedPreset(simpleState);
+        ADVANCED_INPUT_IDS.forEach((id) => {
+            const element = document.getElementById(id);
+            if (!isAdvancedInput(element)) {
+                return;
+            }
+            const nextValue = preset[id];
+            if (typeof nextValue !== 'string') {
+                return;
+            }
+            const canOverride = element.dataset.autofill !== 'manual';
+            if (!canOverride) {
+                return;
+            }
+            element.value = nextValue;
+            element.dataset.autofill = 'simple';
+        });
+        handleSpouseRequirement();
+        persistAdvancedState();
     };
     const parseAmount = (id) => {
         const element = document.getElementById(id);
@@ -192,7 +241,8 @@ export function initAdvancedSimulator() {
         }
         calculateAdvanced();
     });
-    const persistOnInteraction = () => {
+    const persistOnInteraction = (event) => {
+        clearAutofillFlag(event);
         persistAdvancedState();
     };
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('input', persistOnInteraction);
@@ -206,7 +256,16 @@ export function initAdvancedSimulator() {
     });
     advancedSpouseSelect === null || advancedSpouseSelect === void 0 ? void 0 : advancedSpouseSelect.addEventListener('change', handleSpouseRequirement);
     applyAdvancedState(loadAdvancedSessionState());
+    applySimplePreset(loadSimpleSessionState());
     handleSpouseRequirement();
     resetAdvancedResult();
     persistAdvancedState();
+    const advancedTab = document.getElementById('tab-advanced');
+    advancedTab === null || advancedTab === void 0 ? void 0 : advancedTab.addEventListener('click', () => {
+        applySimplePreset(loadSimpleSessionState());
+    });
+    document.addEventListener('simple:state-updated', (event) => {
+        const simpleState = event.detail;
+        applySimplePreset(simpleState !== null && simpleState !== void 0 ? simpleState : null);
+    });
 }

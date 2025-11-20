@@ -218,6 +218,11 @@ export function initSimpleSimulator(): void {
       largeDeduction: hasLargeDeduction,
     };
     saveSimpleSessionState(stateToSave);
+    document.dispatchEvent(
+      new CustomEvent<SimpleSessionState>('simple:state-updated', {
+        detail: stateToSave,
+      })
+    );
 
     const annualIncome = toAnnualIncome(selectedIncome);
     const taxableIncome = calculateResidentTaxableIncome(

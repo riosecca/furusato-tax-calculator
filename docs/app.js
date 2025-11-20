@@ -75,8 +75,14 @@ function initTabs(buttonSelector = '.tab-button', panelSelector = '.panel') {
                     panel.setAttribute('hidden', 'true');
                 }
             });
+            const eventDetail = { id: targetId !== null && targetId !== void 0 ? targetId : null };
+            document.dispatchEvent(new CustomEvent('tab:changed', { detail: eventDetail }));
         });
     });
+}
+function activateTab(targetId, buttonSelector = '.tab-button') {
+    const button = document.querySelector(`${buttonSelector}[data-target="${targetId}"]`);
+    button === null || button === void 0 ? void 0 : button.click();
 }
 
 const DEFAULT_SELECTIONS = {
@@ -239,6 +245,9 @@ function initSimpleSimulator() {
             largeDeduction: hasLargeDeduction,
         };
         saveSimpleSessionState(stateToSave);
+        document.dispatchEvent(new CustomEvent('simple:state-updated', {
+            detail: stateToSave,
+        }));
         const annualIncome = toAnnualIncome(selectedIncome);
         const taxableIncome = calculateResidentTaxableIncome(selectedFamily, annualIncome);
         if (taxableIncome <= NON_TAXABLE_THRESHOLD) {
@@ -307,6 +316,21 @@ const ADVANCED_INPUT_IDS = [
 function isAdvancedInput(element) {
     return element instanceof HTMLInputElement || element instanceof HTMLSelectElement;
 }
+function buildAdvancedPreset(simpleState) {
+    if (!simpleState) {
+        return {};
+    }
+    const income = Number(simpleState.income);
+    const hasSpouse = simpleState.family !== 'single';
+    const hasDependents = simpleState.family === 'couple-child' || simpleState.family === 'extended';
+    return {
+        'adv-income': Number.isFinite(income) ? String(Math.max(Math.round(income * 10000), 0)) : '',
+        'adv-spouse-income': hasSpouse ? '0' : '',
+        'adv-has-spouse': hasSpouse ? 'has' : 'none',
+        'adv-family-type': simpleState.family === 'couple' || simpleState.family === 'couple-child' ? 'couple' : 'none',
+        'adv-dependents': hasDependents ? '1' : '0',
+    };
+}
 function initAdvancedSimulator() {
     if (typeof document === 'undefined') {
         return;
@@ -322,7 +346,13 @@ function initAdvancedSimulator() {
     if (!advancedValue || !advancedDetail || !advancedNote || !advancedFootnote) {
         return;
     }
-    const applyAdvancedState = (state) => {
+    const clearAutofillFlag = (event) => {
+        const target = event.target;
+        if (isAdvancedInput(target)) {
+            target.dataset.autofill = 'manual';
+        }
+    };
+    const applyAdvancedState = (state, { preferExisting = false } = {}) => {
         if (!state) {
             return;
         }
@@ -330,6 +360,9 @@ function initAdvancedSimulator() {
             var _a;
             const element = document.getElementById(id);
             if (isAdvancedInput(element) && typeof state[id] === 'string') {
+                if (preferExisting && element.value !== '') {
+                    return;
+                }
                 element.value = (_a = state[id]) !== null && _a !== void 0 ? _a : '';
             }
         });
@@ -347,6 +380,30 @@ function initAdvancedSimulator() {
     };
     const persistAdvancedState = () => {
         saveAdvancedSessionState(collectAdvancedState());
+    };
+    const applySimplePreset = (simpleState) => {
+        if (!simpleState) {
+            return;
+        }
+        const preset = buildAdvancedPreset(simpleState);
+        ADVANCED_INPUT_IDS.forEach((id) => {
+            const element = document.getElementById(id);
+            if (!isAdvancedInput(element)) {
+                return;
+            }
+            const nextValue = preset[id];
+            if (typeof nextValue !== 'string') {
+                return;
+            }
+            const canOverride = element.dataset.autofill !== 'manual';
+            if (!canOverride) {
+                return;
+            }
+            element.value = nextValue;
+            element.dataset.autofill = 'simple';
+        });
+        handleSpouseRequirement();
+        persistAdvancedState();
     };
     const parseAmount = (id) => {
         const element = document.getElementById(id);
@@ -464,7 +521,8 @@ function initAdvancedSimulator() {
         }
         calculateAdvanced();
     });
-    const persistOnInteraction = () => {
+    const persistOnInteraction = (event) => {
+        clearAutofillFlag(event);
         persistAdvancedState();
     };
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('input', persistOnInteraction);
@@ -478,15 +536,56 @@ function initAdvancedSimulator() {
     });
     advancedSpouseSelect === null || advancedSpouseSelect === void 0 ? void 0 : advancedSpouseSelect.addEventListener('change', handleSpouseRequirement);
     applyAdvancedState(loadAdvancedSessionState());
+    applySimplePreset(loadSimpleSessionState());
     handleSpouseRequirement();
     resetAdvancedResult();
     persistAdvancedState();
+    const advancedTab = document.getElementById('tab-advanced');
+    advancedTab === null || advancedTab === void 0 ? void 0 : advancedTab.addEventListener('click', () => {
+        applySimplePreset(loadSimpleSessionState());
+    });
+    document.addEventListener('simple:state-updated', (event) => {
+        const simpleState = event.detail;
+        applySimplePreset(simpleState !== null && simpleState !== void 0 ? simpleState : null);
+    });
 }
 
+function initTabToggleCta() {
+    var _a;
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const cta = document.querySelector('[data-role="tab-toggle-cta"]');
+    const simplePanelId = 'panel-simple';
+    const advancedPanelId = 'panel-advanced';
+    if (!cta) {
+        return;
+    }
+    const updateCta = (activePanelId) => {
+        const onAdvanced = activePanelId === advancedPanelId;
+        cta.textContent = onAdvanced ? '簡易シミュレーションに進む' : '詳細シミュレーションに進む';
+        cta.dataset.nextTab = onAdvanced ? simplePanelId : advancedPanelId;
+    };
+    cta.addEventListener('click', (event) => {
+        var _a;
+        event.preventDefault();
+        const targetId = (_a = cta.dataset.nextTab) !== null && _a !== void 0 ? _a : advancedPanelId;
+        activateTab(targetId);
+        cta.blur();
+    });
+    document.addEventListener('tab:changed', (event) => {
+        var _a;
+        const detail = event.detail;
+        updateCta((_a = detail === null || detail === void 0 ? void 0 : detail.id) !== null && _a !== void 0 ? _a : null);
+    });
+    const initialActive = document.querySelector('.tab-button.tab-active');
+    updateCta((_a = initialActive === null || initialActive === void 0 ? void 0 : initialActive.dataset.target) !== null && _a !== void 0 ? _a : null);
+}
 function bootstrap() {
     initTabs();
     initSimpleSimulator();
     initAdvancedSimulator();
+    initTabToggleCta();
 }
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {

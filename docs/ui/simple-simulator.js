@@ -160,6 +160,9 @@ export function initSimpleSimulator() {
             largeDeduction: hasLargeDeduction,
         };
         saveSimpleSessionState(stateToSave);
+        document.dispatchEvent(new CustomEvent('simple:state-updated', {
+            detail: stateToSave,
+        }));
         const annualIncome = toAnnualIncome(selectedIncome);
         const taxableIncome = calculateResidentTaxableIncome(selectedFamily, annualIncome);
         if (taxableIncome <= NON_TAXABLE_THRESHOLD) {

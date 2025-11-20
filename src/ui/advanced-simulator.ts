@@ -4,6 +4,7 @@ import {
   saveAdvancedSessionState,
   type AdvancedSessionState,
 } from '../storage/session.js';
+import { loadSimpleSessionState, type SimpleSessionState } from '../storage/session.js';
 
 const ADV_BASIC_DEDUCTION = 480_000;
 const ADV_SPOUSE_DEDUCTION = 380_000;
@@ -55,6 +56,29 @@ function isAdvancedInput(
   return element instanceof HTMLInputElement || element instanceof HTMLSelectElement;
 }
 
+type ApplyStateOptions = {
+  preferExisting?: boolean;
+};
+
+function buildAdvancedPreset(simpleState: SimpleSessionState | null): AdvancedSessionState {
+  if (!simpleState) {
+    return {};
+  }
+
+  const income = Number(simpleState.income);
+  const hasSpouse = simpleState.family !== 'single';
+  const hasDependents = simpleState.family === 'couple-child' || simpleState.family === 'extended';
+
+  return {
+    'adv-income': Number.isFinite(income) ? String(Math.max(Math.round(income * 10_000), 0)) : '',
+    'adv-spouse-income': hasSpouse ? '0' : '',
+    'adv-has-spouse': hasSpouse ? 'has' : 'none',
+    'adv-family-type':
+      simpleState.family === 'couple' || simpleState.family === 'couple-child' ? 'couple' : 'none',
+    'adv-dependents': hasDependents ? '1' : '0',
+  };
+}
+
 export function initAdvancedSimulator(): void {
   if (typeof document === 'undefined') {
     return;
@@ -81,7 +105,17 @@ export function initAdvancedSimulator(): void {
     return;
   }
 
-  const applyAdvancedState = (state: AdvancedSessionState | null) => {
+  const clearAutofillFlag = (event: Event) => {
+    const target = event.target as Element | null;
+    if (isAdvancedInput(target)) {
+      target.dataset.autofill = 'manual';
+    }
+  };
+
+  const applyAdvancedState = (
+    state: AdvancedSessionState | null,
+    { preferExisting = false }: ApplyStateOptions = {}
+  ) => {
     if (!state) {
       return;
     }
@@ -89,6 +123,9 @@ export function initAdvancedSimulator(): void {
     ADVANCED_INPUT_IDS.forEach((id) => {
       const element = document.getElementById(id);
       if (isAdvancedInput(element) && typeof state[id] === 'string') {
+        if (preferExisting && element.value !== '') {
+          return;
+        }
         element.value = state[id] ?? '';
       }
     });
@@ -107,6 +144,36 @@ export function initAdvancedSimulator(): void {
 
   const persistAdvancedState = () => {
     saveAdvancedSessionState(collectAdvancedState());
+  };
+
+  const applySimplePreset = (simpleState: SimpleSessionState | null) => {
+    if (!simpleState) {
+      return;
+    }
+
+    const preset = buildAdvancedPreset(simpleState);
+    ADVANCED_INPUT_IDS.forEach((id) => {
+      const element = document.getElementById(id);
+      if (!isAdvancedInput(element)) {
+        return;
+      }
+
+      const nextValue = preset[id];
+      if (typeof nextValue !== 'string') {
+        return;
+      }
+
+      const canOverride = element.dataset.autofill !== 'manual';
+      if (!canOverride) {
+        return;
+      }
+
+      element.value = nextValue;
+      element.dataset.autofill = 'simple';
+    });
+
+    handleSpouseRequirement();
+    persistAdvancedState();
   };
 
   const parseAmount = (id: string): number => {
@@ -276,7 +343,8 @@ export function initAdvancedSimulator(): void {
     calculateAdvanced();
   });
 
-  const persistOnInteraction = () => {
+  const persistOnInteraction = (event: Event) => {
+    clearAutofillFlag(event);
     persistAdvancedState();
   };
 
@@ -294,7 +362,18 @@ export function initAdvancedSimulator(): void {
   advancedSpouseSelect?.addEventListener('change', handleSpouseRequirement);
 
   applyAdvancedState(loadAdvancedSessionState());
+  applySimplePreset(loadSimpleSessionState());
   handleSpouseRequirement();
   resetAdvancedResult();
   persistAdvancedState();
+
+  const advancedTab = document.getElementById('tab-advanced');
+  advancedTab?.addEventListener('click', () => {
+    applySimplePreset(loadSimpleSessionState());
+  });
+
+  document.addEventListener('simple:state-updated', (event) => {
+    const simpleState = (event as CustomEvent<SimpleSessionState>).detail;
+    applySimplePreset(simpleState ?? null);
+  });
 }
