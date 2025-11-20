@@ -455,6 +455,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      position: relative;
     }
 
     .input-row input,
@@ -471,6 +472,30 @@
     .input-row select:focus {
       outline: 2px solid #f7cfa1;
       border-color: #f0cfa7;
+    }
+
+    .input-pop {
+      position: absolute;
+      right: 6px;
+      bottom: 100%;
+      transform: translateY(-8px);
+      background: var(--bg-highlight);
+      border: 1px solid #f3dfc7;
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 8px;
+      box-shadow: 0 10px 24px rgba(60, 58, 55, 0.08);
+      font-size: 0.82rem;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 120ms ease, transform 120ms ease;
+      z-index: 5;
+    }
+
+    .input-pop[data-visible="true"] {
+      opacity: 1;
+      transform: translateY(-12px);
     }
 
     .input-suffix {
