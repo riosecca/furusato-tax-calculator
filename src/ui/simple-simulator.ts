@@ -5,7 +5,7 @@ import {
   type SimpleSessionState,
 } from '../storage/session.js';
 
-const DEFAULT_SELECTIONS = {
+export const DEFAULT_SELECTIONS = {
   family: 'couple-child',
   income: '700',
 } as const;
@@ -38,12 +38,12 @@ const familyAdjustments: Record<string, number> = {
   extended: -8_000,
 };
 
-const MAN_YEN = 10_000;
+export const MAN_YEN = 10_000;
 const BASIC_DEDUCTION = 480_000;
 const SPOUSE_DEDUCTION = 380_000;
 const DEPENDENT_DEDUCTION = 380_000;
 const NON_TAXABLE_THRESHOLD = 10_000;
-const SOCIAL_INSURANCE_ESTIMATES = [
+export const SOCIAL_INSURANCE_ESTIMATES = [
   { max: 2_000_000, rate: 0.24 },
   { max: 4_000_000, rate: 0.2 },
   { max: 7_000_000, rate: 0.18 },
@@ -61,6 +61,7 @@ const defaultSimpleState: SimpleSessionState = {
   oneStop: false,
   largeDeduction: false,
 };
+export { defaultSimpleState };
 
 export function initSimpleSimulator(): void {
   if (typeof document === 'undefined') {

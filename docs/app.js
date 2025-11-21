@@ -132,6 +132,7 @@ const defaultSimpleState = {
     oneStop: false,
     largeDeduction: false,
 };
+
 function initSimpleSimulator() {
     var _a;
     if (typeof document === 'undefined') {
@@ -348,15 +349,14 @@ function isAdvancedInput(element) {
     return element instanceof HTMLInputElement || element instanceof HTMLSelectElement;
 }
 function buildAdvancedDefaults(simpleState) {
-    var _a;
+    var _a, _b;
     const defaults = Object.assign({}, ADVANCED_DEFAULT_BASE);
-    const incomeSelection = Number((_a = simpleState === null || simpleState === void 0 ? void 0 : simpleState.income) !== null && _a !== void 0 ? _a : DEFAULT_SELECTIONS.income);
+    const incomeSelection = Number((_a = simpleState === null || simpleState === void 0 ? void 0 : simpleState.income) !== null && _a !== void 0 ? _a : defaultSimpleState.income);
     const annualIncome = Number.isFinite(incomeSelection)
         ? Math.max(Math.round(incomeSelection * MAN_YEN), 0)
         : Number(defaults['adv-income']);
     defaults['adv-income'] = String(annualIncome);
-    const socialBracket = SOCIAL_INSURANCE_ESTIMATES.find(({ max }) => annualIncome <= max) ||
-        SOCIAL_INSURANCE_ESTIMATES[SOCIAL_INSURANCE_ESTIMATES.length - 1];
+    const socialBracket = (_b = SOCIAL_INSURANCE_ESTIMATES.find(({ max }) => annualIncome <= max)) !== null && _b !== void 0 ? _b : SOCIAL_INSURANCE_ESTIMATES[SOCIAL_INSURANCE_ESTIMATES.length - 1];
     defaults['adv-social'] = String(Math.max(Math.round(annualIncome * socialBracket.rate), 0));
     const family = simpleState === null || simpleState === void 0 ? void 0 : simpleState.family;
     if (family) {
@@ -371,21 +371,31 @@ function buildAdvancedDefaults(simpleState) {
     return defaults;
 }
 function buildAdvancedPreset(simpleState) {
+    var _a;
     if (!simpleState) {
         return {};
     }
     const income = Number(simpleState.income);
+    const annualIncome = Number.isFinite(income) ? Math.max(Math.round(income * MAN_YEN), 0) : null;
     const hasSpouse = simpleState.family !== 'single';
     const hasDependents = simpleState.family === 'couple-child' || simpleState.family === 'extended';
+    const socialBracket = annualIncome !== null
+        ? (_a = SOCIAL_INSURANCE_ESTIMATES.find(({ max }) => annualIncome <= max)) !== null && _a !== void 0 ? _a : SOCIAL_INSURANCE_ESTIMATES[SOCIAL_INSURANCE_ESTIMATES.length - 1]
+        : null;
+    const estimatedSocial = annualIncome !== null && socialBracket
+        ? Math.max(Math.round(annualIncome * socialBracket.rate), 0)
+        : null;
     return {
-        'adv-income': Number.isFinite(income) ? String(Math.max(Math.round(income * 10000), 0)) : '',
+        'adv-income': annualIncome !== null ? String(annualIncome) : '',
         'adv-spouse-income': hasSpouse ? '0' : '',
         'adv-has-spouse': hasSpouse ? 'has' : 'none',
         'adv-family-type': simpleState.family === 'couple' || simpleState.family === 'couple-child' ? 'couple' : 'none',
         'adv-dependents': hasDependents ? '1' : '0',
+        'adv-social': estimatedSocial !== null ? String(estimatedSocial) : '',
     };
 }
 function initAdvancedSimulator() {
+    var _a;
     if (typeof document === 'undefined') {
         return;
     }
@@ -425,9 +435,6 @@ function initAdvancedSimulator() {
         return '';
     };
     const formatMoneyInputValue = (input) => {
-        if (!(input instanceof HTMLInputElement)) {
-            return 0;
-        }
         const caret = input.selectionStart;
         const prevLength = input.value.length;
         const normalized = normalizeNumericString(input.value);
@@ -443,7 +450,7 @@ function initAdvancedSimulator() {
     const renderMoneyPopover = (input, amount, visible) => {
         var _a;
         const parent = (_a = input === null || input === void 0 ? void 0 : input.parentElement) !== null && _a !== void 0 ? _a : null;
-        if (!(input instanceof HTMLInputElement) || !parent) {
+        if (!parent) {
             return;
         }
         let pop = parent.querySelector('.input-pop');
@@ -463,9 +470,6 @@ function initAdvancedSimulator() {
         pop.dataset.visible = 'true';
     };
     const syncMoneyInput = (input, { showPopover = false } = {}) => {
-        if (!(input instanceof HTMLInputElement)) {
-            return 0;
-        }
         const amount = formatMoneyInputValue(input);
         renderMoneyPopover(input, amount, showPopover);
         return amount;
@@ -511,15 +515,15 @@ function initAdvancedSimulator() {
         ADVANCED_INPUT_IDS.forEach((id) => {
             var _a;
             const element = document.getElementById(id);
-            if (isAdvancedInput(element) && typeof state[id] === 'string') {
-                if (preferExisting && element.value !== '') {
-                    return;
-                }
-                const nextValue = (_a = state[id]) !== null && _a !== void 0 ? _a : '';
-                element.value = nextValue;
-                if (element instanceof HTMLInputElement && ADVANCED_MONEY_INPUT_ID_SET.has(id)) {
-                    syncMoneyInput(element);
-                }
+            if (!isAdvancedInput(element) || typeof state[id] !== 'string') {
+                return;
+            }
+            if (preferExisting && element.value !== '') {
+                return;
+            }
+            element.value = (_a = state[id]) !== null && _a !== void 0 ? _a : '';
+            if (element instanceof HTMLInputElement && ADVANCED_MONEY_INPUT_ID_SET.has(id)) {
+                syncMoneyInput(element);
             }
         });
     };
@@ -528,14 +532,14 @@ function initAdvancedSimulator() {
         ADVANCED_INPUT_IDS.forEach((id) => {
             var _a;
             const element = document.getElementById(id);
-            if (isAdvancedInput(element)) {
-                if (element instanceof HTMLInputElement && ADVANCED_MONEY_INPUT_ID_SET.has(id)) {
-                    result[id] = normalizeNumericString(element.value);
-                }
-                else {
-                    result[id] = (_a = element.value) !== null && _a !== void 0 ? _a : '';
-                }
+            if (!isAdvancedInput(element)) {
+                return;
             }
+            if (element instanceof HTMLInputElement && ADVANCED_MONEY_INPUT_ID_SET.has(id)) {
+                result[id] = normalizeNumericString(element.value);
+                return;
+            }
+            result[id] = (_a = element.value) !== null && _a !== void 0 ? _a : '';
         });
         return result;
     };
@@ -585,7 +589,7 @@ function initAdvancedSimulator() {
     const resetAdvancedResult = () => {
         advancedValue.textContent = '−円';
         advancedNote.textContent = '入力すると控除上限額（目安）を計算します';
-        advancedDetail.textContent = '年収と控除の内訳を入力してください';
+        advancedDetail.textContent = '年収と控除の金額を入力してください';
         advancedFootnote.textContent =
             '基礎控除や扶養控除を加味した目安額です。実際の金額はお手元の証憑でご確認ください。';
     };
@@ -668,9 +672,9 @@ function initAdvancedSimulator() {
         const totalTaxDeduction = incomeTaxDeduction + residentBasicDeduction + residentSpecialDeduction;
         const actualCost = Math.max(maxDonation - totalTaxDeduction, 0);
         advancedValue.textContent = formatYen(maxDonation);
-        advancedNote.textContent = 'あなたの控除上限額（目安）は';
-        advancedDetail.textContent = `${hasSpouse ? '配偶者あり' : '配偶者なし'} / ${dependents}人扶養 / 課税所得 ${formatYen(taxableRounded)} をもとに試算しています`;
-        advancedFootnote.textContent = `(${getFamilyText(familyType)}) 概算控除内訳: 所得税 ${formatYen(incomeTaxDeduction)}・住民税(基本) ${formatYen(residentBasicDeduction)}・住民税(特例) ${formatYen(residentSpecialDeduction)}。この条件で寄附すると自己負担の目安は ${formatYen(actualCost)} です。`;
+        advancedNote.textContent = 'あなたの控除上限額（目安）';
+        advancedDetail.textContent = `${hasSpouse ? '配偶者あり' : '配偶者なし'} / ${dependents}人扶養 / 課税所得${formatYen(taxableRounded)} をもとに試算しています`;
+        advancedFootnote.textContent = `(${getFamilyText(familyType)}) 概算控除額: 所得税${formatYen(incomeTaxDeduction)}・住民税(基本) ${formatYen(residentBasicDeduction)}・住民税(特例) ${formatYen(residentSpecialDeduction)}。この条件で寄付すると自己負担の目安は ${formatYen(actualCost)} です。`;
     };
     function refreshAdvancedResult({ reportValidity = false } = {}) {
         if (!(advancedForm instanceof HTMLFormElement)) {
@@ -699,14 +703,15 @@ function initAdvancedSimulator() {
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('change', persistOnInteraction);
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('reset', () => {
         setTimeout(() => {
-            const simpleState = loadSimpleSessionState() || defaultSimpleState;
+            var _a;
+            const simpleState = (_a = loadSimpleSessionState()) !== null && _a !== void 0 ? _a : defaultSimpleState;
             applyAdvancedState(buildAdvancedDefaults(simpleState));
             applySimplePreset(simpleState);
             refreshMoneyInputs();
         }, 0);
     });
     advancedSpouseSelect === null || advancedSpouseSelect === void 0 ? void 0 : advancedSpouseSelect.addEventListener('change', handleSpouseRequirement);
-    const simpleInitialState = loadSimpleSessionState() || defaultSimpleState;
+    const simpleInitialState = (_a = loadSimpleSessionState()) !== null && _a !== void 0 ? _a : defaultSimpleState;
     const savedAdvancedState = loadAdvancedSessionState();
     const advancedInitialState = Object.assign({}, buildAdvancedDefaults(simpleInitialState));
     if (savedAdvancedState) {
@@ -716,9 +721,9 @@ function initAdvancedSimulator() {
             }
         });
     }
+    enhanceMoneyInputs();
     applyAdvancedState(advancedInitialState);
     applySimplePreset(simpleInitialState);
-    enhanceMoneyInputs();
     handleSpouseRequirement();
     refreshMoneyInputs();
     refreshAdvancedResult();

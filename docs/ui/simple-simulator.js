@@ -1,6 +1,6 @@
 import { formatYen } from '../utils/currency.js';
 import { loadSimpleSessionState, saveSimpleSessionState, } from '../storage/session.js';
-const DEFAULT_SELECTIONS = {
+export const DEFAULT_SELECTIONS = {
     family: 'couple-child',
     income: '700',
 };
@@ -30,12 +30,12 @@ const familyAdjustments = {
     'couple-child': -15000,
     extended: -8000,
 };
-const MAN_YEN = 10000;
+export const MAN_YEN = 10000;
 const BASIC_DEDUCTION = 480000;
 const SPOUSE_DEDUCTION = 380000;
 const DEPENDENT_DEDUCTION = 380000;
 const NON_TAXABLE_THRESHOLD = 10000;
-const SOCIAL_INSURANCE_ESTIMATES = [
+export const SOCIAL_INSURANCE_ESTIMATES = [
     { max: 2000000, rate: 0.24 },
     { max: 4000000, rate: 0.2 },
     { max: 7000000, rate: 0.18 },
@@ -47,6 +47,7 @@ const defaultSimpleState = {
     oneStop: false,
     largeDeduction: false,
 };
+export { defaultSimpleState };
 export function initSimpleSimulator() {
     var _a;
     if (typeof document === 'undefined') {
