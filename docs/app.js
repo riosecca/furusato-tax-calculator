@@ -739,6 +739,58 @@ function initAdvancedSimulator() {
     });
 }
 
+function initResultBarActions() {
+    var _a;
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const calcAction = document.getElementById('result-bar-calc');
+    const resetAction = document.getElementById('result-bar-reset');
+    const simpleCalc = document.getElementById('btn-simple-calc');
+    const simpleReset = document.getElementById('btn-simple-reset');
+    const advancedForm = document.getElementById('advanced-form');
+    const simplePanelId = 'panel-simple';
+    const advancedPanelId = 'panel-advanced';
+    if (!calcAction || !resetAction) {
+        return;
+    }
+    const updateLabels = (activePanelId) => {
+        const onAdvanced = activePanelId === advancedPanelId;
+        calcAction.dataset.mode = onAdvanced ? 'advanced' : 'simple';
+        resetAction.dataset.mode = onAdvanced ? 'advanced' : 'simple';
+        calcAction.textContent = onAdvanced
+            ? '詳細シミュレーションを計算する'
+            : 'かんたんシミュレーションを計算する';
+        resetAction.textContent = onAdvanced
+            ? '詳細シミュレーションをリセット'
+            : 'かんたんシミュレーションをリセット';
+    };
+    calcAction.addEventListener('click', () => {
+        if (calcAction.dataset.mode === 'advanced') {
+            advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.requestSubmit();
+        }
+        else {
+            simpleCalc === null || simpleCalc === void 0 ? void 0 : simpleCalc.click();
+        }
+        calcAction.blur();
+    });
+    resetAction.addEventListener('click', () => {
+        if (resetAction.dataset.mode === 'advanced') {
+            advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.reset();
+        }
+        else {
+            simpleReset === null || simpleReset === void 0 ? void 0 : simpleReset.click();
+        }
+        resetAction.blur();
+    });
+    document.addEventListener('tab:changed', (event) => {
+        var _a;
+        const detail = event.detail;
+        updateLabels((_a = detail === null || detail === void 0 ? void 0 : detail.id) !== null && _a !== void 0 ? _a : null);
+    });
+    const initialActive = document.querySelector('.tab-button.tab-active');
+    updateLabels((_a = initialActive === null || initialActive === void 0 ? void 0 : initialActive.dataset.target) !== null && _a !== void 0 ? _a : simplePanelId);
+}
 function initTabToggleCta() {
     var _a;
     if (typeof document === 'undefined') {
@@ -775,6 +827,7 @@ function bootstrap() {
     initSimpleSimulator();
     initAdvancedSimulator();
     initTabToggleCta();
+    initResultBarActions();
 }
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {

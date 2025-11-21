@@ -372,6 +372,21 @@
       flex-wrap: wrap;
     }
 
+    .result-bar__actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .result-bar__actions .btn-primary,
+    .result-bar__actions .btn-secondary {
+      padding: 10px 16px;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+    }
+
     .btn-primary {
       background: var(--accent);
       color: #fff;
@@ -658,6 +673,16 @@
         text-align: center;
       }
 
+      .result-bar__actions {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .result-bar__actions .btn-primary,
+      .result-bar__actions .btn-secondary {
+        width: 100%;
+      }
+
       .result-bar__detail,
       .result-bar__cta {
         margin-left: 0;
@@ -757,8 +782,8 @@
             </div>
 
             <div class="actions simple-actions">
-              <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
-              <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
+              <button id="btn-simple-calc" class="btn-primary" type="button">かんたんシミュレーションを計算する</button>
+              <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセットする</button>
             </div>
           </section>
         </div>
@@ -1049,8 +1074,8 @@
             </div>
 
             <div class="actions">
-              <button class="btn-primary" type="submit">この条件で控除上限額を計算する</button>
-              <button class="btn-secondary" type="reset">入力内容をリセット</button>
+              <button class="btn-primary" type="submit">詳細シミュレーションを計算する</button>
+              <button class="btn-secondary" type="reset">入力内容をリセットする</button>
             </div>
           </form>
         </section>
@@ -1079,6 +1104,10 @@
         <p class="result-bar__value" data-simple-result="value">-円</p>
       </div>
       <p class="result-bar__detail" data-simple-result="detail"></p>
+      <div class="result-bar__actions">
+        <button id="result-bar-calc" class="btn-primary" type="button">かんたんシミュレーションを計算する</button>
+        <button id="result-bar-reset" class="btn-secondary" type="button">かんたんシミュレーションをリセット</button>
+      </div>
       <a class="result-bar__cta" data-role="tab-toggle-cta" href="#panel-advanced">詳細シミュレーションに進む</a>
     </div>
   </aside>
