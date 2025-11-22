@@ -144,16 +144,29 @@ function initSimpleSimulator() {
   if (typeof document === 'undefined') {
     return;
   }
-  const resultValueTargets = document.querySelectorAll(
-    '[data-simple-result="value"]'
+  const simplePanel = document.getElementById('panel-simple');
+  const panelResultValue =
+    simplePanel === null || simplePanel === void 0
+      ? void 0
+      : simplePanel.querySelector('[data-simple-result="value"]');
+  const panelResultDetail =
+    simplePanel === null || simplePanel === void 0
+      ? void 0
+      : simplePanel.querySelector('[data-simple-result="detail"]');
+  const panelResultNote =
+    simplePanel === null || simplePanel === void 0
+      ? void 0
+      : simplePanel.querySelector('[data-simple-result="note"]');
+  const barResultValue = document.querySelector(
+    '.result-bar [data-simple-result="value"]'
   );
-  const resultDetailTargets = document.querySelectorAll(
-    '[data-simple-result="detail"]'
+  const barResultDetail = document.querySelector(
+    '.result-bar [data-simple-result="detail"]'
   );
-  const resultNoteTargets = document.querySelectorAll(
-    '[data-simple-result="note"]'
+  const barResultNote = document.querySelector(
+    '.result-bar [data-simple-result="note"]'
   );
-  if (!resultValueTargets.length || !resultNoteTargets.length) {
+  if (!panelResultValue) {
     return;
   }
   const getSelectedInput = (name) =>
@@ -182,16 +195,25 @@ function initSimpleSimulator() {
     }
   };
   const updateResultCard = ({ amount, detail }) => {
-    resultValueTargets.forEach((target) => {
-      target.textContent = amount;
-    });
-    resultDetailTargets.forEach((target) => {
-      target.textContent = detail !== null && detail !== void 0 ? detail : '';
-      target.toggleAttribute('data-empty', !detail);
-    });
-    resultNoteTargets.forEach((target) => {
-      target.textContent = 'あなたの控除上限額（目安）は';
-    });
+    if (panelResultValue) panelResultValue.textContent = amount;
+    if (panelResultDetail) {
+      panelResultDetail.textContent =
+        detail !== null && detail !== void 0 ? detail : '';
+      panelResultDetail.toggleAttribute('data-empty', !detail);
+    }
+    if (panelResultNote)
+      panelResultNote.textContent = 'あなたの控除上限額（目安）は';
+
+    if (simplePanel && !simplePanel.hidden) {
+      if (barResultValue) barResultValue.textContent = amount;
+      if (barResultDetail) {
+        barResultDetail.textContent =
+          detail !== null && detail !== void 0 ? detail : '';
+        barResultDetail.style.display = detail ? 'block' : 'none';
+      }
+      if (barResultNote)
+        barResultNote.textContent = 'あなたの控除上限額（目安）は';
+    }
   };
   const applyStateToInputs = (state) => {
     setRadioValue('family', state.family);
@@ -321,6 +343,15 @@ function initSimpleSimulator() {
     .forEach((element) => {
       element.addEventListener('change', runSimpleSimulation);
     });
+  document.addEventListener('tab:changed', (event) => {
+    var _a;
+    if (
+      ((_a = event.detail) === null || _a === void 0 ? void 0 : _a.id) ===
+      'panel-simple'
+    ) {
+      runSimpleSimulation();
+    }
+  });
   const savedState =
     (_a = loadSimpleSessionState()) !== null && _a !== void 0
       ? _a
@@ -484,6 +515,17 @@ function initAdvancedSimulator() {
   const advancedSpouseSelect = document.getElementById('adv-has-spouse');
   const advancedSpouseIncome = document.getElementById('adv-spouse-income');
   const familyTypeSelect = document.getElementById('adv-family-type');
+  const barResultValue = document.querySelector(
+    '.result-bar [data-simple-result="value"]'
+  );
+  const barResultDetail = document.querySelector(
+    '.result-bar [data-simple-result="detail"]'
+  );
+  const barResultNote = document.querySelector(
+    '.result-bar [data-simple-result="note"]'
+  );
+  const advancedPanel = document.getElementById('panel-advanced');
+
   if (!advancedValue || !advancedDetail || !advancedNote || !advancedFootnote) {
     return;
   }
@@ -704,6 +746,13 @@ function initAdvancedSimulator() {
     advancedDetail.textContent = '年収と控除の金額を入力してください';
     advancedFootnote.textContent =
       '基礎控除や扶養控除を加味した目安額です。実際の金額はお手元の証憑でご確認ください。';
+
+    if (advancedPanel && !advancedPanel.hidden) {
+      if (barResultValue) barResultValue.textContent = '−円';
+      if (barResultNote)
+        barResultNote.textContent = '入力すると控除上限額（目安）を計算します';
+      if (barResultDetail) barResultDetail.style.display = 'none';
+    }
   };
   const handleSpouseRequirement = () => {
     if (!advancedSpouseSelect || !advancedSpouseIncome) {
@@ -825,6 +874,16 @@ function initAdvancedSimulator() {
     )}・住民税(特例) ${formatYen(
       residentSpecialDeduction
     )}。この条件で寄付すると自己負担の目安は ${formatYen(actualCost)} です。`;
+
+    if (advancedPanel && !advancedPanel.hidden) {
+      if (barResultValue) barResultValue.textContent = formatYen(maxDonation);
+      if (barResultNote)
+        barResultNote.textContent = 'あなたの控除上限額（目安）';
+      if (barResultDetail) {
+        barResultDetail.textContent = `自己負担目安 ${formatYen(actualCost)}`;
+        barResultDetail.style.display = 'block';
+      }
+    }
   };
   function refreshAdvancedResult({ reportValidity = false } = {}) {
     if (!(advancedForm instanceof HTMLFormElement)) {
@@ -913,6 +972,15 @@ function initAdvancedSimulator() {
         const simpleState = loadSimpleSessionState();
         applySimplePreset(simpleState);
       });
+  document.addEventListener('tab:changed', (event) => {
+    var _a;
+    if (
+      ((_a = event.detail) === null || _a === void 0 ? void 0 : _a.id) ===
+      'panel-advanced'
+    ) {
+      refreshAdvancedResult();
+    }
+  });
   document.addEventListener('simple:state-updated', (event) => {
     const simpleState = event.detail;
     applySimplePreset(
