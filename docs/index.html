@@ -33,6 +33,74 @@
       padding-bottom: 96px;
     }
 
+    .top-banner {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 10px 20px rgba(60, 58, 55, 0.06);
+    }
+
+    .top-banner__inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 10px 20px 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .top-banner__lead {
+      margin: 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .mode-switch {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .mode-switch__item {
+      border: 1px solid #e6d7c4;
+      background: #fff;
+      color: #5c5142;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(60, 58, 55, 0.06);
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background-color 120ms ease;
+      cursor: pointer;
+    }
+
+    .mode-switch__item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(60, 58, 55, 0.1);
+    }
+
+    .mode-switch__item--active {
+      background: #fff7ed;
+      border-color: #f0cfa7;
+      box-shadow: 0 12px 24px rgba(232, 108, 60, 0.12);
+    }
+
+    .mode-switch__title {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .mode-switch__sub {
+      display: block;
+      font-size: 0.9rem;
+      color: #7a6e60;
+      font-weight: 600;
+    }
+
     .app {
       max-width: 1000px;
       margin: 32px auto 56px;
@@ -746,6 +814,21 @@
 
 <body>
   <a href="https://riosecca.github.io/furusato-tax-calculator/">リンク</a>
+  <div class="top-banner" role="group" aria-label="シミュレーションを選択">
+    <div class="top-banner__inner">
+      <p class="top-banner__lead">かんたん入力で控除上限額の目安がわかります。詳細を確認したい場合は、控除上限額（目安）シミュレーションからどうぞ。</p>
+      <div class="mode-switch">
+        <button class="mode-switch__item" data-role="mode-switch" data-target="panel-simple" type="button">
+          <span class="mode-switch__title">かんたんシミュレーション</span>
+          <span class="mode-switch__sub">まずはこちらから</span>
+        </button>
+        <button class="mode-switch__item" data-role="mode-switch" data-target="panel-advanced" type="button">
+          <span class="mode-switch__title">控除上限額（目安）シミュレーション</span>
+          <span class="mode-switch__sub">実際の控除額が知りたい場合</span>
+        </button>
+      </div>
+    </div>
+  </div>
   <div class="app">
     <header class="app-header">
       <h1 class="app-title">ふるさと納税シミュレーション</h1>

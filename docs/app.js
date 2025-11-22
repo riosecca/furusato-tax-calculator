@@ -778,6 +778,36 @@ function initTabToggleCta() {
     const initialActive = document.querySelector('.tab-button.tab-active');
     updateCta((_a = initialActive === null || initialActive === void 0 ? void 0 : initialActive.dataset.target) !== null && _a !== void 0 ? _a : null);
 }
+function initModeSwitch() {
+    var _a, _b;
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const buttons = Array.from(document.querySelectorAll('[data-role="mode-switch"]'));
+    if (!buttons.length) {
+        return;
+    }
+    const setActive = (targetId) => {
+        buttons.forEach((btn) => {
+            btn.classList.toggle('mode-switch__item--active', btn.dataset.target === targetId);
+        });
+    };
+    buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const targetId = btn.dataset.target;
+            if (targetId) {
+                activateTab(targetId);
+            }
+            setActive(targetId !== null && targetId !== void 0 ? targetId : null);
+        });
+    });
+    document.addEventListener('tab:changed', (event) => {
+        var _a;
+        setActive((_a = event.detail) === null || _a === void 0 ? void 0 : _a.id);
+    });
+    const initialActive = (_b = (_a = document.querySelector('.tab-button.tab-active')) === null || _a === void 0 ? void 0 : _a.dataset.target) !== null && _b !== void 0 ? _b : null;
+    setActive(initialActive);
+}
 function initBarActions() {
     if (typeof document === 'undefined') {
         return;
@@ -817,6 +847,7 @@ function bootstrap() {
     initSimpleSimulator();
     initAdvancedSimulator();
     initTabToggleCta();
+    initModeSwitch();
     initBarActions();
 }
 if (typeof document !== 'undefined') {
