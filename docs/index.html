@@ -1,1253 +1,1537 @@
 ﻿<!DOCTYPE html>
 <html lang="ja">
-
-<head>
-  <meta charset="UTF-8" />
-  <title>ふるさと納税かんたん&詳細シミュレーター</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg-main: #f7f3ed;
-      --bg-card: #ffffff;
-      --bg-highlight: #fff8ed;
-      --text-main: #3c3a37;
-      --text-muted: #6c6863;
-      --border: #e5d8c7;
-      --accent: #e76c3c;
-      --accent-sub: #d9435b;
-      --shadow: 0 16px 36px rgba(60, 58, 55, 0.08);
-      --radius: 12px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Noto Sans JP", "Hiragino Sans", "Helvetica Neue", Arial,
-        sans-serif;
-      background: var(--bg-main);
-      color: var(--text-main);
-      -webkit-font-smoothing: antialiased;
-      padding-bottom: 96px;
-    }
-
-    .top-banner {
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      box-shadow: 0 10px 20px rgba(60, 58, 55, 0.06);
-    }
-
-    .top-banner__inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 10px 20px 14px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .top-banner__lead {
-      margin: 0;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      display: none;
-    }
-
-    .mode-switch {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 10px;
-    }
-
-    .mode-switch__item {
-      border: 1px solid #e6d7c4;
-      background: #fff;
-      color: #5c5142;
-      border-radius: 12px;
-      padding: 12px 14px;
-      text-align: center;
-      font-weight: 700;
-      box-shadow: 0 8px 18px rgba(60, 58, 55, 0.06);
-      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, background-color 120ms ease;
-      cursor: pointer;
-    }
-
-    .mode-switch__item:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 22px rgba(60, 58, 55, 0.1);
-    }
-
-    .mode-switch__item--active {
-      background: #fff7ed;
-      border-color: #f0cfa7;
-      box-shadow: 0 12px 24px rgba(232, 108, 60, 0.12);
-    }
-
-    .mode-switch__title {
-      display: block;
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-
-    .mode-switch__sub {
-      display: block;
-      font-size: 0.9rem;
-      color: #7a6e60;
-      font-weight: 600;
-    }
-
-    .app {
-      max-width: 1000px;
-      margin: 32px auto 56px;
-      padding: 0 20px;
-    }
-
-    .app-header {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 20px 16px;
-      box-shadow: var(--shadow);
-      margin-bottom: 18px;
-    }
-
-    .app-title {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0 0 6px;
-    }
-
-    .app-subtitle {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      margin: 0;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .app-header .tabs {
-      display: none;
-    }
-
-    .tab-button {
-      flex: 1;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--bg-card);
-      padding: 12px 16px;
-      text-align: center;
-      font-weight: 600;
-      color: var(--text-main);
-      cursor: pointer;
-      box-shadow: var(--shadow);
-      transition: border-color 120ms ease, box-shadow 120ms ease,
-        transform 120ms ease;
-    }
-
-    .tab-button small {
-      display: block;
-      margin-top: 4px;
-      font-weight: 500;
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .tab-button.tab-active {
-      background: var(--bg-highlight);
-      border-color: #f0cfa7;
-      transform: translateY(-2px);
-    }
-
-    .panel {
-      margin-top: 16px;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 16px;
-    }
-
-    .layout.layout-simple {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .simple-column {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .simple-side-card {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .simple-actions {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: stretch;
-      gap: 12px;
-    }
-
-    .simple-actions .btn-primary,
-    .simple-actions .btn-secondary {
-      width: 100%;
-    }
-
-    @media (min-width: 960px) {
-      .layout.layout-simple {
-        grid-template-columns: minmax(0, 0.52fr) minmax(0, 0.48fr);
-        align-items: start;
+  <head>
+    <meta charset="UTF-8" />
+    <title>ふるさと納税かんたん&詳細シミュレーター</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --bg-main: #f7f3ed;
+        --bg-card: #ffffff;
+        --bg-highlight: #fff8ed;
+        --text-main: #3c3a37;
+        --text-muted: #6c6863;
+        --border: #e5d8c7;
+        --accent: #e76c3c;
+        --accent-sub: #d9435b;
+        --shadow: 0 16px 36px rgba(60, 58, 55, 0.08);
+        --radius: 12px;
       }
 
-      .simple-side-card {
-        min-width: 440px;
+      * {
+        box-sizing: border-box;
       }
 
-      .about-easysimulator-form-radiobutton__list {
-        grid-template-columns: repeat(3, minmax(140px, 1fr));
-      }
-    }
-
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 10px;
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .section-desc {
-      margin: 0 0 16px;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-
-    .pill-note {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      background: var(--bg-highlight);
-      border: 1px solid #f3dfc7;
-      color: var(--text-main);
-      border-radius: var(--radius);
-      padding: 6px 10px;
-      font-size: 0.85rem;
-      margin-bottom: 12px;
-    }
-
-    .steps {
-      display: grid;
-      gap: 12px;
-    }
-
-    .step {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      background: #fffdf9;
-    }
-
-    .step-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-
-    .step-number {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #f0cfa7;
-      color: #8a4e00;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-    }
-
-    .option-grid {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    }
-
-    .option-grid.option-grid-income {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      align-items: stretch;
-    }
-
-    .option-grid.option-grid-income .option-card {
-      justify-content: flex-start;
-      min-width: 0;
-    }
-
-    .option-grid.option-grid-income .option-card span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-      text-align: left;
-      font-size: 0.95rem;
-    }
-
-
-    .option-card {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      background: #fff;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      transition: border-color 120ms ease, box-shadow 120ms ease;
-    }
-
-    .option-card:hover {
-      border-color: #f0cfa7;
-      box-shadow: 0 8px 16px rgba(60, 58, 55, 0.06);
-    }
-
-    .option-card label {
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .option-card small {
-      display: block;
-      color: var(--text-muted);
-      margin-top: 2px;
-      font-weight: 500;
-    }
-
-    .option-card input[type="radio"] {
-      accent-color: var(--accent);
-      width: 18px;
-      height: 18px;
-    }
-
-    .about-easysimulator-form-radiobutton__box {
-      margin-top: 4px;
-      width: 100%;
-    }
-
-    .about-easysimulator-form-radiobutton__list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(120px, 1fr));
-      gap: 10px;
-    }
-
-    .about-easysimulator-form-radiobutton__list li {
-      margin: 0;
-    }
-
-    .frm-radio {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      background: #fff;
-      height: 100%;
-      min-width: 0;
-      justify-content: center;
-    }
-
-    .frm-radio__input {
-      accent-color: var(--accent);
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-    }
-
-    .frm-radio__text {
-      font-weight: 600;
-      color: var(--text-main);
-      flex: 1 1 8ch;
-      min-width: 0;
-      text-align: center;
-      white-space: nowrap;
-      padding: 0 4px;
-      font-size: clamp(0.85rem, 1.4vw, 0.95rem);
-    }
-
-    @media (max-width: 520px) {
-      .about-easysimulator-form-radiobutton__list {
-        gap: 6px;
+      body {
+        margin: 0;
+        font-family: 'Noto Sans JP', 'Hiragino Sans', 'Helvetica Neue', Arial,
+          sans-serif;
+        background: var(--bg-main);
+        color: var(--text-main);
+        -webkit-font-smoothing: antialiased;
+        padding-bottom: 0;
       }
 
-      .frm-radio {
-        gap: 6px;
-        padding: 8px 10px;
+      .top-banner {
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        background: #fff;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 10px 20px rgba(60, 58, 55, 0.06);
       }
 
-      .frm-radio__input {
-        width: 14px;
-        height: 14px;
-      }
-
-      .frm-radio__text {
-        font-size: clamp(0.75rem, 2vw, 0.85rem);
-        flex: 1 1 6.5ch;
-      }
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .checkbox-row input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--accent-sub);
-    }
-
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 14px;
-      flex-wrap: wrap;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 999px;
-      padding: 12px 22px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 10px 22px rgba(232, 108, 60, 0.25);
-      transition: transform 120ms ease, box-shadow 120ms ease;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 28px rgba(232, 108, 60, 0.28);
-      background: #d85c30;
-    }
-
-    .btn-secondary {
-      border: 1px solid var(--border);
-      background: var(--bg-card);
-      color: var(--text-main);
-      border-radius: 999px;
-      padding: 11px 18px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .form-card {
-      display: grid;
-      gap: 18px;
-    }
-
-    .form-step {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      background: #fffdf9;
-      display: grid;
-      gap: 12px;
-    }
-
-    .step-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      margin: 0;
-    }
-
-    .step-title small {
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .form-grid {
-      display: grid;
-      gap: 12px;
-    }
-
-    .form-grid.columns {
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    }
-
-    .field-label {
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .field-label small {
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .input-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      position: relative;
-    }
-
-    .input-row input,
-    .input-row select {
-      flex: 1;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 1rem;
-      background: #fff;
-    }
-
-    .input-row input:focus,
-    .input-row select:focus {
-      outline: 2px solid #f7cfa1;
-      border-color: #f0cfa7;
-    }
-
-    .input-pop {
-      position: absolute;
-      right: 6px;
-      bottom: 100%;
-      transform: translateY(-8px);
-      background: var(--bg-highlight);
-      border: 1px solid #f3dfc7;
-      color: var(--text-main);
-      padding: 6px 10px;
-      border-radius: 8px;
-      box-shadow: 0 10px 24px rgba(60, 58, 55, 0.08);
-      font-size: 0.82rem;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 120ms ease, transform 120ms ease;
-      z-index: 5;
-    }
-
-    .input-pop[data-visible="true"] {
-      opacity: 1;
-      transform: translateY(-12px);
-    }
-
-    .input-suffix {
-      color: var(--text-muted);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .note-box {
-      background: var(--bg-highlight);
-      border: 1px solid #f3dfc7;
-      padding: 10px 12px;
-      border-radius: var(--radius);
-      color: var(--text-muted);
-      font-size: 0.94rem;
-    }
-
-    .side-card {
-      background: linear-gradient(180deg, #fff, #fff7ec);
-      border: 1px solid #f1dcc0;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .side-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 20% 20%, rgba(255, 200, 150, 0.22), transparent 40%),
-        radial-gradient(circle at 80% 0%, rgba(255, 140, 120, 0.12), transparent 35%);
-      pointer-events: none;
-    }
-
-    .result-title {
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin: 0 0 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .result-body {
-      margin-top: 12px;
-      background: #fff2e3;
-      border: 1px dashed #f0cfa7;
-      border-radius: 10px;
-      padding: 14px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .result-value {
-      font-size: 2.4rem;
-      font-weight: 800;
-      color: #c9452c;
-      margin: 0;
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-    }
-
-    .result-note {
-      color: var(--text-muted);
-      margin: 0;
-      font-size: 0.95rem;
-    }
-
-    .result-footer {
-      margin-top: 14px;
-      padding: 10px 12px;
-      background: #fff;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      font-size: 0.92rem;
-    }
-
-    [data-simple-result="detail"][data-empty="true"],
-    [data-simple-result="detail"]:empty {
-      display: none;
-    }
-
-    .result-bar {
-      position: fixed;
-      inset: auto 0 0 0;
-      background: var(--bg-card);
-      border-top: 1px solid var(--border);
-      box-shadow: 0 -12px 32px rgba(60, 58, 55, 0.08);
-      z-index: 50;
-    }
-
-    .result-bar__inner {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 10px 18px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .result-bar__icon {
-      font-size: 1.8rem;
-    }
-
-    .result-bar__label {
-      margin: 0;
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-
-    .result-bar__value {
-      margin: 2px 0 0;
-      font-size: 1.6rem;
-      font-weight: 700;
-      color: var(--accent);
-      line-height: 1.2;
-    }
-
-    .result-bar__content {
-      display: flex;
-      flex-direction: column;
-      flex: 1 1 260px;
-      min-width: 220px;
-    }
-
-    .result-bar__detail {
-      margin: 0;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      flex: 1 1 180px;
-    }
-
-    .result-bar__detail:empty {
-      display: none;
-    }
-
-    .result-bar__actions {
-      margin-left: auto;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-end;
-    }
-
-    .result-bar__btn {
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      border-radius: 999px;
-      padding: 10px 16px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(232, 108, 60, 0.25);
-      transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
-    }
-
-    .result-bar__btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 22px rgba(232, 108, 60, 0.28);
-    }
-
-    .result-bar__btn--sub {
-      background: var(--accent-sub);
-      box-shadow: 0 8px 18px rgba(217, 67, 91, 0.2);
-    }
-
-    .result-bar__btn--sub:hover {
-      box-shadow: 0 12px 22px rgba(217, 67, 91, 0.24);
-    }
-
-    .result-bar__btn--ghost {
-      background: transparent;
-      color: var(--text-main);
-      border: 1px solid var(--border);
-      box-shadow: none;
-    }
-
-    .result-bar__btn--ghost:hover {
-      background: var(--bg-highlight);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow);
-    }
-
-    .result-bar__cta {
-      margin-left: 0;
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      font-weight: 700;
-      box-shadow: var(--shadow);
-      transition: opacity 120ms ease, transform 120ms ease;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
-    .result-bar__cta:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-
-    @media (max-width: 720px) {
-      .result-bar__inner {
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
-        padding: 8px 14px;
+      .top-banner__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 20px 14px;
+        display: grid;
         gap: 10px;
       }
 
-      .result-bar__content {
-        flex: 0 0 auto;
-        width: 100%;
+      .top-banner__lead {
+        margin: 0;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        display: none;
       }
 
-      .result-bar__detail,
-      .result-bar__cta {
-        margin-left: 0;
+      .mode-switch {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 10px;
       }
 
-      .result-bar__actions {
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
+      .mode-switch__item {
+        border: 1px solid #e6d7c4;
+        background: #fff;
+        color: #5c5142;
+        border-radius: 12px;
+        padding: 12px 14px;
+        text-align: center;
+        font-weight: 700;
+        box-shadow: 0 8px 18px rgba(60, 58, 55, 0.06);
+        transition: transform 120ms ease, box-shadow 120ms ease,
+          border-color 120ms ease, background-color 120ms ease;
+        cursor: pointer;
       }
 
-      .result-bar__btn {
-        flex: 1 1 100%;
-        width: 100%;
+      .mode-switch__item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px rgba(60, 58, 55, 0.1);
       }
 
-      .result-bar__cta {
-        width: 100%;
+      .mode-switch__item--active {
+        background: #fff7ed;
+        border-color: #f0cfa7;
+        box-shadow: 0 12px 24px rgba(232, 108, 60, 0.12);
       }
-    }
 
-    @media (max-width: 820px) {
-      .layout {
-        grid-template-columns: 1fr;
+      .mode-switch__title {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+
+      .mode-switch__sub {
+        display: block;
+        font-size: 0.9rem;
+        color: #7a6e60;
+        font-weight: 600;
+      }
+
+      .app {
+        max-width: 1000px;
+        margin: 32px auto 56px;
+        padding: 0 20px;
+        padding-bottom: 80px;
+      }
+
+      .app-header {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 18px 20px 16px;
+        box-shadow: var(--shadow);
+        margin-bottom: 18px;
+      }
+
+      .app-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
+
+      .app-subtitle {
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        margin: 0;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .app-header .tabs {
+        display: none;
       }
 
       .tab-button {
-        padding: 12px;
+        flex: 1;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--bg-card);
+        padding: 12px 16px;
+        text-align: center;
+        font-weight: 600;
+        color: var(--text-main);
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: border-color 120ms ease, box-shadow 120ms ease,
+          transform 120ms ease;
       }
-    }
-  </style>
-</head>
 
-<body>
+      .tab-button small {
+        display: block;
+        margin-top: 4px;
+        font-weight: 500;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+      }
 
-  <div class="top-banner" role="group" aria-label="シミュレーションを選択">
-    <div class="top-banner__inner">
-      <p class="top-banner__lead">かんたん入力で控除上限額の目安がわかります。詳細を確認したい場合は、控除上限額（目安）シミュレーションからどうぞ。</p>
-      <div class="mode-switch">
-        <button class="mode-switch__item" data-role="mode-switch" data-target="panel-simple" type="button">
-          <span class="mode-switch__title">かんたんシミュレーション</span>
-          <span class="mode-switch__sub">まずはこちらから</span>
-        </button>
-        <button class="mode-switch__item" data-role="mode-switch" data-target="panel-advanced" type="button">
-          <span class="mode-switch__title">控除上限額（目安）シミュレーション</span>
-          <span class="mode-switch__sub">実際の控除額が知りたい場合</span>
-        </button>
+      .tab-button.tab-active {
+        background: var(--bg-highlight);
+        border-color: #f0cfa7;
+        transform: translateY(-2px);
+      }
+
+      .panel {
+        margin-top: 16px;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: 16px;
+      }
+
+      .layout.layout-simple {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .simple-column {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .simple-side-card {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .simple-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .simple-actions .btn-primary,
+      .simple-actions .btn-secondary {
+        width: 100%;
+      }
+
+      @media (min-width: 960px) {
+        .layout.layout-simple {
+          grid-template-columns: minmax(0, 0.52fr) minmax(0, 0.48fr);
+          align-items: start;
+        }
+
+        .simple-side-card {
+          min-width: 440px;
+        }
+
+        .about-easysimulator-form-radiobutton__list {
+          grid-template-columns: repeat(3, minmax(140px, 1fr));
+        }
+      }
+
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 18px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+
+      .section-desc {
+        margin: 0 0 16px;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .pill-note {
+        display: inline-flex;
+        gap: 6px;
+        align-items: center;
+        background: var(--bg-highlight);
+        border: 1px solid #f3dfc7;
+        color: var(--text-main);
+        border-radius: var(--radius);
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+      }
+
+      .steps {
+        display: grid;
+        gap: 12px;
+      }
+
+      .step {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 12px 14px;
+        background: #fffdf9;
+      }
+
+      .step-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+
+      .step-number {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #f0cfa7;
+        color: #8a4e00;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+      }
+
+      .option-grid {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .option-grid.option-grid-income {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: stretch;
+      }
+
+      .option-grid.option-grid-income .option-card {
+        justify-content: flex-start;
+        min-width: 0;
+      }
+
+      .option-grid.option-grid-income .option-card span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+        text-align: left;
+        font-size: 0.95rem;
+      }
+
+      .option-card {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        background: #fff;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .option-card:hover {
+        border-color: #f0cfa7;
+        box-shadow: 0 8px 16px rgba(60, 58, 55, 0.06);
+      }
+
+      .option-card label {
+        cursor: pointer;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .option-card small {
+        display: block;
+        color: var(--text-muted);
+        margin-top: 2px;
+        font-weight: 500;
+      }
+
+      .option-card input[type='radio'] {
+        accent-color: var(--accent);
+        width: 18px;
+        height: 18px;
+      }
+
+      .about-easysimulator-form-radiobutton__box {
+        margin-top: 4px;
+        width: 100%;
+      }
+
+      .about-easysimulator-form-radiobutton__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 10px;
+      }
+
+      .about-easysimulator-form-radiobutton__list li {
+        margin: 0;
+      }
+
+      .frm-radio {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        background: #fff;
+        height: 100%;
+        min-width: 0;
+        justify-content: center;
+      }
+
+      .frm-radio__input {
+        accent-color: var(--accent);
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+
+      .frm-radio__text {
+        font-weight: 600;
+        color: var(--text-main);
+        flex: 1 1 8ch;
+        min-width: 0;
+        text-align: center;
+        white-space: nowrap;
+        padding: 0 4px;
+        font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+      }
+
+      @media (max-width: 520px) {
+        .about-easysimulator-form-radiobutton__list {
+          gap: 6px;
+        }
+
+        .frm-radio {
+          gap: 6px;
+          padding: 8px 10px;
+        }
+
+        .frm-radio__input {
+          width: 14px;
+          height: 14px;
+        }
+
+        .frm-radio__text {
+          font-size: clamp(0.75rem, 2vw, 0.85rem);
+          flex: 1 1 6.5ch;
+        }
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .checkbox-row input[type='checkbox'] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent-sub);
+      }
+
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 10px 22px rgba(232, 108, 60, 0.25);
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 28px rgba(232, 108, 60, 0.28);
+        background: #d85c30;
+      }
+
+      .btn-secondary {
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+        color: var(--text-main);
+        border-radius: 999px;
+        padding: 11px 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .form-card {
+        display: grid;
+        gap: 18px;
+      }
+
+      .form-step {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        background: #fffdf9;
+        display: grid;
+        gap: 12px;
+      }
+
+      .step-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      .step-title small {
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .form-grid.columns {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .field-label {
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .field-label small {
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .input-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative;
+      }
+
+      .input-row input,
+      .input-row select {
+        flex: 1;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 1rem;
+        background: #fff;
+      }
+
+      .input-row input:focus,
+      .input-row select:focus {
+        outline: 2px solid #f7cfa1;
+        border-color: #f0cfa7;
+      }
+
+      .input-pop {
+        position: absolute;
+        right: 6px;
+        bottom: 100%;
+        transform: translateY(-8px);
+        background: var(--bg-highlight);
+        border: 1px solid #f3dfc7;
+        color: var(--text-main);
+        padding: 6px 10px;
+        border-radius: 8px;
+        box-shadow: 0 10px 24px rgba(60, 58, 55, 0.08);
+        font-size: 0.82rem;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 120ms ease, transform 120ms ease;
+        z-index: 5;
+      }
+
+      .input-pop[data-visible='true'] {
+        opacity: 1;
+        transform: translateY(-12px);
+      }
+
+      .input-suffix {
+        color: var(--text-muted);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .note-box {
+        background: var(--bg-highlight);
+        border: 1px solid #f3dfc7;
+        padding: 10px 12px;
+        border-radius: var(--radius);
+        color: var(--text-muted);
+        font-size: 0.94rem;
+      }
+
+      .side-card {
+        background: linear-gradient(180deg, #fff, #fff7ec);
+        border: 1px solid #f1dcc0;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 16px 18px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .side-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+            circle at 20% 20%,
+            rgba(255, 200, 150, 0.22),
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 80% 0%,
+            rgba(255, 140, 120, 0.12),
+            transparent 35%
+          );
+        pointer-events: none;
+      }
+
+      .result-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0 0 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .result-body {
+        margin-top: 12px;
+        background: #fff2e3;
+        border: 1px dashed #f0cfa7;
+        border-radius: 10px;
+        padding: 14px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .result-value {
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: #c9452c;
+        margin: 0;
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+      }
+
+      .result-note {
+        color: var(--text-muted);
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
+      .result-footer {
+        margin-top: 14px;
+        padding: 10px 12px;
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      [data-simple-result='detail'][data-empty='true'],
+      [data-simple-result='detail']:empty {
+        display: none;
+      }
+
+      .result-bar {
+        position: fixed;
+        inset: auto 0 0 0;
+        background: var(--bg-card);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -12px 32px rgba(60, 58, 55, 0.08);
+        z-index: 50;
+      }
+
+      .result-bar__inner {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 10px 18px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .result-bar__icon {
+        font-size: 1.8rem;
+      }
+
+      .result-bar__label {
+        margin: 0;
+        font-size: 0.88rem;
+        color: var(--text-muted);
+      }
+
+      .result-bar__value {
+        margin: 2px 0 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--accent);
+        line-height: 1.2;
+      }
+
+      .result-bar__content {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 260px;
+        min-width: 220px;
+      }
+
+      .result-bar__detail {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        flex: 1 1 180px;
+      }
+
+      .result-bar__detail:empty {
+        display: none;
+      }
+
+      .result-bar__actions {
+        margin-left: auto;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .result-bar__btn {
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 999px;
+        padding: 10px 16px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(232, 108, 60, 0.25);
+        transition: transform 120ms ease, box-shadow 120ms ease,
+          opacity 120ms ease;
+      }
+
+      .result-bar__btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 22px rgba(232, 108, 60, 0.28);
+      }
+
+      .result-bar__btn--sub {
+        background: var(--accent-sub);
+        box-shadow: 0 8px 18px rgba(217, 67, 91, 0.2);
+      }
+
+      .result-bar__btn--sub:hover {
+        box-shadow: 0 12px 22px rgba(217, 67, 91, 0.24);
+      }
+
+      .result-bar__btn--ghost {
+        background: transparent;
+        color: var(--text-main);
+        border: 1px solid var(--border);
+        box-shadow: none;
+      }
+
+      .result-bar__btn--ghost:hover {
+        background: var(--bg-highlight);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow);
+      }
+
+      .result-bar__cta {
+        margin-left: 0;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: var(--shadow);
+        transition: opacity 120ms ease, transform 120ms ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .result-bar__cta:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
+
+      @media (max-width: 720px) {
+        .result-bar__inner {
+          flex-direction: column;
+          align-items: stretch;
+          text-align: center;
+          padding: 8px 14px;
+          gap: 10px;
+        }
+
+        .result-bar__content {
+          flex: 0 0 auto;
+          width: 100%;
+        }
+
+        .result-bar__detail,
+        .result-bar__cta {
+          margin-left: 0;
+        }
+
+        .result-bar__actions {
+          width: 100%;
+          justify-content: center;
+          margin-left: 0;
+        }
+
+        .result-bar__btn {
+          flex: 1 1 100%;
+          width: 100%;
+        }
+
+        .result-bar__cta {
+          width: 100%;
+        }
+
+        .result-bar__detail {
+          flex: 0 0 auto;
+          margin: 0;
+        }
+      }
+
+      @media (max-width: 820px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .tab-button {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="top-banner" role="group" aria-label="シミュレーションを選択">
+      <div class="top-banner__inner">
+        <p class="top-banner__lead">
+          かんたん入力で控除上限額の目安がわかります。詳細を確認したい場合は、控除上限額（目安）シミュレーションからどうぞ。
+        </p>
+        <div class="mode-switch">
+          <button
+            class="mode-switch__item"
+            data-role="mode-switch"
+            data-target="panel-simple"
+            type="button"
+          >
+            <span class="mode-switch__title">かんたんシミュレーション</span>
+            <span class="mode-switch__sub">まずはこちらから</span>
+          </button>
+          <button
+            class="mode-switch__item"
+            data-role="mode-switch"
+            data-target="panel-advanced"
+            type="button"
+          >
+            <span class="mode-switch__title"
+              >控除上限額（目安）シミュレーション</span
+            >
+            <span class="mode-switch__sub">実際の控除額が知りたい場合</span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="app">
-    <header class="app-header">
+    <div class="app">
+      <header class="app-header">
+        <h1 class="app-title">ふるさと納税シミュレーション</h1>
+        <p class="app-subtitle">
+          かんたん入力で控除上限額の目安がわかります。詳細を確認したい場合は、控除上限額シミュレーションからどうぞ。
+        </p>
+        <a href="https://riosecca.github.io/furusato-tax-calculator/">リンク</a>
+        <div class="tabs" role="tablist">
+          <button
+            id="tab-simple"
+            class="tab-button tab-active"
+            data-target="panel-simple"
+            type="button"
+          >
+            かんたんシミュレーション
+            <small>まずはこちらから</small>
+          </button>
+          <button
+            id="tab-advanced"
+            class="tab-button"
+            data-target="panel-advanced"
+            type="button"
+          >
+            控除上限額（目安）シミュレーション
+            <small>実際の控除額が知りたい場合</small>
+          </button>
+        </div>
+      </header>
 
-      <h1 class="app-title">ふるさと納税シミュレーション</h1>
-      <p class="app-subtitle">
-        かんたん入力で控除上限額の目安がわかります。詳細を確認したい場合は、控除上限額シミュレーションからどうぞ。
-      </p>
-      <a href="https://riosecca.github.io/furusato-tax-calculator/">リンク</a>
-      <div class="tabs" role="tablist">
-        <button id="tab-simple" class="tab-button tab-active" data-target="panel-simple" type="button">
-          かんたんシミュレーション
-          <small>まずはこちらから</small>
-        </button>
-        <button id="tab-advanced" class="tab-button" data-target="panel-advanced" type="button">
-          控除上限額（目安）シミュレーション
-          <small>実際の控除額が知りたい場合</small>
-        </button>
-      </div>
-    </header>
+      <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
+        <div class="layout layout-simple">
+          <div class="simple-column">
+            <aside class="side-card">
+              <div class="result-title">
+                <span aria-hidden="true">📊</span>
+                あなたのシミュレーション結果
+              </div>
+              <div class="result-body">
+                <p class="result-note" data-simple-result="note">
+                  あなたの控除上限額（目安）は
+                </p>
+                <p class="result-value" data-simple-result="value">-円</p>
+                <p class="result-note" data-simple-result="detail"></p>
+              </div>
+            </aside>
 
-    <main class="panel" id="panel-simple" aria-labelledby="tab-simple">
-      <div class="layout layout-simple">
-        <div class="simple-column">
-          <aside class="side-card">
-            <div class="result-title">
-              <span aria-hidden="true">📊</span>
-              あなたのシミュレーション結果
-            </div>
-            <div class="result-body">
-              <p class="result-note" data-simple-result="note">あなたの控除上限額（目安）は</p>
-              <p class="result-value" data-simple-result="value">-円</p>
-              <p class="result-note" data-simple-result="detail"></p>
-            </div>
-          </aside>
+            <section class="card">
+              <div class="section-title">かんたんシミュレーション</div>
 
-          <section class="card">
-            <div class="section-title">かんたんシミュレーション</div>
-
-            <div class="steps">
-              <div class="step">
-                <div class="step-header">
-                  <span class="step-number">STEP.1</span>
-                  <span>家族構成を選択する</span>
-                </div>
-                <div class="option-grid">
-                  <label class="option-card">
-                    <input type="radio" name="family" value="couple-child" checked />
-                    <div>
-                      <span>夫婦</span>
-                      <small>こどもがいる</small>
-                    </div>
-                  </label>
-                  <label class="option-card">
-                    <input type="radio" name="family" value="couple" />
-                    <div>
-                      <span>夫婦で配偶者控除を受ける</span>
-                      <small>こどもがいない</small>
-                    </div>
-                  </label>
-                  <label class="option-card">
-                    <input type="radio" name="family" value="single" />
-                    <div>
-                      <span>単身、もしくは共働き（配偶者控除がない）</span>
-                    </div>
-                  </label>
-                  <label class="option-card">
-                    <input type="radio" name="family" value="extended" />
-                    <div>
-                      <span>他の扶養親族がいる（家族のみ）</span>
-                    </div>
-                  </label>
+              <div class="steps">
+                <div class="step">
+                  <div class="step-header">
+                    <span class="step-number">STEP.1</span>
+                    <span>家族構成を選択する</span>
+                  </div>
+                  <div class="option-grid">
+                    <label class="option-card">
+                      <input
+                        type="radio"
+                        name="family"
+                        value="couple-child"
+                        checked
+                      />
+                      <div>
+                        <span>夫婦</span>
+                        <small>こどもがいる</small>
+                      </div>
+                    </label>
+                    <label class="option-card">
+                      <input type="radio" name="family" value="couple" />
+                      <div>
+                        <span>夫婦で配偶者控除を受ける</span>
+                        <small>こどもがいない</small>
+                      </div>
+                    </label>
+                    <label class="option-card">
+                      <input type="radio" name="family" value="single" />
+                      <div>
+                        <span>単身、もしくは共働き（配偶者控除がない）</span>
+                      </div>
+                    </label>
+                    <label class="option-card">
+                      <input type="radio" name="family" value="extended" />
+                      <div>
+                        <span>他の扶養親族がいる（家族のみ）</span>
+                      </div>
+                    </label>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- <div class="actions simple-actions">
+              <!-- <div class="actions simple-actions">
               <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
               <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
             </div> -->
+            </section>
+          </div>
+
+          <section class="card simple-side-card">
+            <div class="step">
+              <div class="step-header">
+                <span class="step-number">STEP.2</span>
+                <span>年収（所得）</span>
+              </div>
+              <div class="about-easysimulator-form-radiobutton__box -income">
+                <ul class="about-easysimulator-form-radiobutton__list">
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="150"
+                      />
+                      <span class="frm-radio__text">150万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="200"
+                      />
+                      <span class="frm-radio__text">200万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="300"
+                      />
+                      <span class="frm-radio__text">300万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="400"
+                      />
+                      <span class="frm-radio__text">400万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="500"
+                      />
+                      <span class="frm-radio__text">500万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="600"
+                      />
+                      <span class="frm-radio__text">600万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="700"
+                        checked
+                      />
+                      <span class="frm-radio__text">700万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="800"
+                      />
+                      <span class="frm-radio__text">800万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="900"
+                      />
+                      <span class="frm-radio__text">900万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="1000"
+                      />
+                      <span class="frm-radio__text">1,000万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="1200"
+                      />
+                      <span class="frm-radio__text">1,200万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="1500"
+                      />
+                      <span class="frm-radio__text">1,500万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="2000"
+                      />
+                      <span class="frm-radio__text">2,000万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="3000"
+                      />
+                      <span class="frm-radio__text">3,000万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="5000"
+                      />
+                      <span class="frm-radio__text">5,000万</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="10000"
+                      />
+                      <span class="frm-radio__text">1億</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="20000"
+                      />
+                      <span class="frm-radio__text">2億</span>
+                    </label>
+                  </li>
+                  <li>
+                    <label class="frm-radio">
+                      <input
+                        type="radio"
+                        class="frm-radio__input"
+                        name="income"
+                        value="30000"
+                      />
+                      <span class="frm-radio__text">3億</span>
+                    </label>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="step">
+              <div class="step-header">
+                <span class="step-number">STEP.3</span>
+                <span>その他（任意）</span>
+              </div>
+              <div class="steps">
+                <label class="checkbox-row">
+                  <input type="checkbox" name="one-stop" />
+                  <span>ワンストップ特例の寄附のみ</span>
+                </label>
+                <label class="checkbox-row">
+                  <input type="checkbox" name="large-deduction" />
+                  <span>今年、医療費控除や住宅ローン控除などの金額がある</span>
+                </label>
+              </div>
+            </div>
           </section>
         </div>
+      </main>
 
-        <section class="card simple-side-card">
-          <div class="step">
-            <div class="step-header">
-              <span class="step-number">STEP.2</span>
-              <span>年収（所得）</span>
-            </div>
-            <div class="about-easysimulator-form-radiobutton__box -income">
-              <ul class="about-easysimulator-form-radiobutton__list">
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="150" />
-                    <span class="frm-radio__text">150万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="200" />
-                    <span class="frm-radio__text">200万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="300" />
-                    <span class="frm-radio__text">300万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="400" />
-                    <span class="frm-radio__text">400万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="500" />
-                    <span class="frm-radio__text">500万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="600" />
-                    <span class="frm-radio__text">600万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="700" checked />
-                    <span class="frm-radio__text">700万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="800" />
-                    <span class="frm-radio__text">800万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="900" />
-                    <span class="frm-radio__text">900万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="1000" />
-                    <span class="frm-radio__text">1,000万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="1200" />
-                    <span class="frm-radio__text">1,200万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="1500" />
-                    <span class="frm-radio__text">1,500万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="2000" />
-                    <span class="frm-radio__text">2,000万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="3000" />
-                    <span class="frm-radio__text">3,000万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="5000" />
-                    <span class="frm-radio__text">5,000万</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="10000" />
-                    <span class="frm-radio__text">1億</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="20000" />
-                    <span class="frm-radio__text">2億</span>
-                  </label>
-                </li>
-                <li>
-                  <label class="frm-radio">
-                    <input type="radio" class="frm-radio__input" name="income" value="30000" />
-                    <span class="frm-radio__text">3億</span>
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
+      <section
+        class="panel"
+        id="panel-advanced"
+        aria-labelledby="tab-advanced"
+        hidden
+      >
+        <div class="layout">
+          <section class="card">
+            <div class="section-title">控除上限額（目安）シミュレーション</div>
+            <p class="section-desc">
+              源泉徴収票や住民税決定通知書の数値を入力すると、より正確な上限額を計算できます。金額は半角数字で入力してください。
+            </p>
 
-          <div class="step">
-            <div class="step-header">
-              <span class="step-number">STEP.3</span>
-              <span>その他（任意）</span>
-            </div>
-            <div class="steps">
-              <label class="checkbox-row">
-                <input type="checkbox" name="one-stop" />
-                <span>ワンストップ特例の寄附のみ</span>
-              </label>
-              <label class="checkbox-row">
-                <input type="checkbox" name="large-deduction" />
-                <span>今年、医療費控除や住宅ローン控除などの金額がある</span>
-              </label>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-
-    <section class="panel" id="panel-advanced" aria-labelledby="tab-advanced" hidden>
-      <div class="layout">
-        <section class="card">
-          <div class="section-title">控除上限額（目安）シミュレーション</div>
-          <p class="section-desc">
-            源泉徴収票や住民税決定通知書の数値を入力すると、より正確な上限額を計算できます。金額は半角数字で入力してください。
-          </p>
-
-          <form id="advanced-form" class="form-card" autocomplete="off">
-            <div class="form-step">
-              <p class="step-title"><span class="step-number">STEP.1</span> あなたや家族の所得はいくら？</p>
-              <div class="form-grid columns">
-                <div>
-                  <label class="field-label" for="adv-income">あなたの給与収入 <small>必須</small></label>
-                  <div class="input-row">
-                    <input id="adv-income" type="number" inputmode="decimal" min="0" placeholder="0" required />
-                    <span class="input-suffix">円</span>
+            <form id="advanced-form" class="form-card" autocomplete="off">
+              <div class="form-step">
+                <p class="step-title">
+                  <span class="step-number">STEP.1</span>
+                  あなたや家族の所得はいくら？
+                </p>
+                <div class="form-grid columns">
+                  <div>
+                    <label class="field-label" for="adv-income"
+                      >あなたの給与収入 <small>必須</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-income"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                        required
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-spouse-income">配偶者の給与収入 <small>配偶者がいる場合は必須</small></label>
-                  <div class="input-row">
-                    <input id="adv-spouse-income" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
+                  <div>
+                    <label class="field-label" for="adv-spouse-income"
+                      >配偶者の給与収入
+                      <small>配偶者がいる場合は必須</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-spouse-income"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-listed">株式譲渡益（上場） <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-listed" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
+                  <div>
+                    <label class="field-label" for="adv-listed"
+                      >株式譲渡益（上場） <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-listed"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-unlisted">株式譲渡益（非上場） <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-unlisted" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
+                  <div>
+                    <label class="field-label" for="adv-unlisted"
+                      >株式譲渡益（非上場） <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-unlisted"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="form-step">
-              <p class="step-title"><span class="step-number">STEP.2</span> あなたの家族構成は？</p>
-              <div class="form-grid columns">
-                <div>
-                  <label class="field-label" for="adv-has-spouse">配偶者の有無 <small>必須</small></label>
-                  <div class="input-row">
-                    <select id="adv-has-spouse" required>
-                      <option value="none">なし</option>
-                      <option value="has">あり</option>
-                    </select>
+              <div class="form-step">
+                <p class="step-title">
+                  <span class="step-number">STEP.2</span> あなたの家族構成は？
+                </p>
+                <div class="form-grid columns">
+                  <div>
+                    <label class="field-label" for="adv-has-spouse"
+                      >配偶者の有無 <small>必須</small></label
+                    >
+                    <div class="input-row">
+                      <select id="adv-has-spouse" required>
+                        <option value="none">なし</option>
+                        <option value="has">あり</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-family-type"
+                      >ご家庭に該当しますか？ <small>必須</small></label
+                    >
+                    <div class="input-row">
+                      <select id="adv-family-type" required>
+                        <option value="none">非該当</option>
+                        <option value="couple">夫婦のみ</option>
+                        <option value="single-parent">ひとり親</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-dependents"
+                      >一般の扶養控除</label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-dependents"
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">人</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-disabled">障害者</label>
+                    <div class="input-row">
+                      <input
+                        id="adv-disabled"
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">人</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-special-self"
+                      >本人/同居の特別障害者</label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-special-self"
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">人</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-special-other"
+                      >同居の特別障害者</label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-special-other"
+                        type="number"
+                        inputmode="numeric"
+                        min="0"
+                        step="1"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">人</span>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <label class="field-label" for="adv-family-type">ご家庭に該当しますか？ <small>必須</small></label>
-                  <div class="input-row">
-                    <select id="adv-family-type" required>
-                      <option value="none">非該当</option>
-                      <option value="couple">夫婦のみ</option>
-                      <option value="single-parent">ひとり親</option>
-                    </select>
-                  </div>
+                <div class="note-box">
+                  扶養や障害者の人数は控除対象の人数を入力してください。入力がない場合は0人として計算します。
                 </div>
-                <div>
-                  <label class="field-label" for="adv-dependents">一般の扶養控除</label>
-                  <div class="input-row">
-                    <input id="adv-dependents" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
-                    <span class="input-suffix">人</span>
+              </div>
+
+              <div class="form-step">
+                <p class="step-title">
+                  <span class="step-number">STEP.3</span>
+                  あなたの保険料や控除額はいくら？
+                </p>
+                <div class="form-grid columns">
+                  <div>
+                    <label class="field-label" for="adv-social"
+                      >社会保険料等の金額 <small>必須</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-social"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                        required
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-disabled">障害者</label>
-                  <div class="input-row">
-                    <input id="adv-disabled" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
-                    <span class="input-suffix">人</span>
+                  <div>
+                    <label class="field-label" for="adv-small-enterprise"
+                      >小規模企業共済等掛金の金額 <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-small-enterprise"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-special-self">本人/同居の特別障害者</label>
-                  <div class="input-row">
-                    <input id="adv-special-self" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
-                    <span class="input-suffix">人</span>
+                  <div>
+                    <label class="field-label" for="adv-life"
+                      >生命保険料控除額 <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-life"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-special-other">同居の特別障害者</label>
-                  <div class="input-row">
-                    <input id="adv-special-other" type="number" inputmode="numeric" min="0" step="1" placeholder="0" />
-                    <span class="input-suffix">人</span>
+                  <div>
+                    <label class="field-label" for="adv-earthquake"
+                      >地震保険料控除額 <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-earthquake"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-medical"
+                      >医療費控除の金額 <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-medical"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="field-label" for="adv-housing"
+                      >住宅借入金等特別控除額 <small>任意</small></label
+                    >
+                    <div class="input-row">
+                      <input
+                        id="adv-housing"
+                        type="number"
+                        inputmode="decimal"
+                        min="0"
+                        placeholder="0"
+                      />
+                      <span class="input-suffix">円</span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="note-box">扶養や障害者の人数は控除対象の人数を入力してください。入力がない場合は0人として計算します。</div>
-            </div>
 
-            <div class="form-step">
-              <p class="step-title"><span class="step-number">STEP.3</span> あなたの保険料や控除額はいくら？</p>
-              <div class="form-grid columns">
-                <div>
-                  <label class="field-label" for="adv-social">社会保険料等の金額 <small>必須</small></label>
-                  <div class="input-row">
-                    <input id="adv-social" type="number" inputmode="decimal" min="0" placeholder="0" required />
-                    <span class="input-suffix">円</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-small-enterprise">小規模企業共済等掛金の金額 <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-small-enterprise" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-life">生命保険料控除額 <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-life" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-earthquake">地震保険料控除額 <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-earthquake" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-medical">医療費控除の金額 <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-medical" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="field-label" for="adv-housing">住宅借入金等特別控除額 <small>任意</small></label>
-                  <div class="input-row">
-                    <input id="adv-housing" type="number" inputmode="decimal" min="0" placeholder="0" />
-                    <span class="input-suffix">円</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- <div class="actions">
+              <!-- <div class="actions">
               <button class="btn-primary" type="submit">この条件で控除上限額を計算する</button>
               <button class="btn-secondary" type="reset">入力内容をリセット</button>
             </div> -->
-          </form>
-        </section>
+            </form>
+          </section>
 
-        <aside class="side-card">
-          <div class="result-title">
-            <span aria-hidden="true">📊</span>
-            詳細シミュレーション結果
-          </div>
-          <div class="result-body" id="advanced-result">
-            <p class="result-note" id="advanced-note">入力すると控除上限額（目安）を計算します</p>
-            <p class="result-value" id="advanced-value">−<span>円</span></p>
-            <p class="result-note" id="advanced-detail">年収と控除の内訳を入力してください</p>
-          </div>
-          <div class="result-footer" id="advanced-footnote">基礎控除や扶養控除を加味した目安額です。実際の金額はお手元の証憑でご確認ください。</div>
-        </aside>
-      </div>
-    </section>
-  </div>
-
-  <aside class="result-bar" aria-live="polite">
-    <div class="result-bar__inner">
-      <div class="result-bar__icon" aria-hidden="true">🧮</div>
-      <div class="result-bar__content">
-        <p class="result-bar__label" data-simple-result="note">あなたの控除上限額（目安）は</p>
-        <p class="result-bar__value" data-simple-result="value">-円</p>
-      </div>
-      <p class="result-bar__detail" data-simple-result="detail"></p>
-      <div class="result-bar__actions" aria-label="操作">
-        <button class="result-bar__btn" id="bar-calc" type="button">簡易を計算する</button>
-        <button class="result-bar__btn result-bar__btn--ghost" id="bar-reset" type="button">入力をリセットする</button>
-      </div>
+          <aside class="side-card">
+            <div class="result-title">
+              <span aria-hidden="true">📊</span>
+              詳細シミュレーション結果
+            </div>
+            <div class="result-body" id="advanced-result">
+              <p class="result-note" id="advanced-note">
+                入力すると控除上限額（目安）を計算します
+              </p>
+              <p class="result-value" id="advanced-value">−<span>円</span></p>
+              <p class="result-note" id="advanced-detail">
+                年収と控除の内訳を入力してください
+              </p>
+            </div>
+            <div class="result-footer" id="advanced-footnote">
+              基礎控除や扶養控除を加味した目安額です。実際の金額はお手元の証憑でご確認ください。
+            </div>
+          </aside>
+        </div>
+      </section>
     </div>
-  </aside>
 
-  <script defer src="./app.js"></script>
+    <aside class="result-bar" aria-live="polite">
+      <div class="result-bar__inner">
+        <div class="result-bar__icon" aria-hidden="true">🧮</div>
+        <div class="result-bar__content">
+          <p class="result-bar__label" data-simple-result="note">
+            あなたの控除上限額（目安）は
+          </p>
+          <p class="result-bar__value" data-simple-result="value">-円</p>
+        </div>
+        <p class="result-bar__detail" data-simple-result="detail"></p>
+        <div class="result-bar__actions" aria-label="操作">
+          <button class="result-bar__btn" id="bar-calc" type="button">
+            簡易を計算する
+          </button>
+          <button
+            class="result-bar__btn result-bar__btn--ghost"
+            id="bar-reset"
+            type="button"
+          >
+            入力をリセットする
+          </button>
+        </div>
+      </div>
+    </aside>
 
-</body>
-
+    <script defer src="./app.js"></script>
+  </body>
 </html>
