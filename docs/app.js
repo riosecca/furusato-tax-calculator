@@ -138,8 +138,6 @@ function initSimpleSimulator() {
     if (typeof document === 'undefined') {
         return;
     }
-    const calcButton = document.getElementById('btn-simple-calc');
-    const resetButton = document.getElementById('btn-simple-reset');
     const resultValueTargets = document.querySelectorAll('[data-simple-result="value"]');
     const resultDetailTargets = document.querySelectorAll('[data-simple-result="detail"]');
     const resultNoteTargets = document.querySelectorAll('[data-simple-result="note"]');
@@ -267,15 +265,16 @@ function initSimpleSimulator() {
             amount: formatYen(estimated),
         });
     }
-    calcButton === null || calcButton === void 0 ? void 0 : calcButton.addEventListener('click', runSimpleSimulation);
+    const resetSimple = () => {
+        applyStateToInputs(defaultSimpleState);
+        runSimpleSimulation();
+    };
+    document.addEventListener('simulator:simple-calc', runSimpleSimulation);
+    document.addEventListener('simulator:reset-all', resetSimple);
     document
         .querySelectorAll('input[name="family"], input[name="income"], input[name="one-stop"], input[name="large-deduction"]')
         .forEach((element) => {
         element.addEventListener('change', runSimpleSimulation);
-    });
-    resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener('click', () => {
-        applyStateToInputs(defaultSimpleState);
-        runSimpleSimulation();
     });
     const savedState = (_a = loadSimpleSessionState()) !== null && _a !== void 0 ? _a : defaultSimpleState;
     applyStateToInputs(savedState);
@@ -690,6 +689,13 @@ function initAdvancedSimulator() {
         }
         calculateAdvanced();
     }
+    document.addEventListener('simulator:advanced-calc', () => {
+        refreshAdvancedResult({ reportValidity: true });
+    });
+    document.addEventListener('simulator:reset-all', () => {
+        var _a;
+        (_a = advancedForm) === null || _a === void 0 ? void 0 : _a.reset();
+    });
     advancedForm === null || advancedForm === void 0 ? void 0 : advancedForm.addEventListener('submit', (event) => {
         event.preventDefault();
         refreshAdvancedResult({ reportValidity: true });
@@ -708,6 +714,8 @@ function initAdvancedSimulator() {
             applyAdvancedState(buildAdvancedDefaults(simpleState));
             applySimplePreset(simpleState);
             refreshMoneyInputs();
+            refreshAdvancedResult();
+            persistAdvancedState();
         }, 0);
     });
     advancedSpouseSelect === null || advancedSpouseSelect === void 0 ? void 0 : advancedSpouseSelect.addEventListener('change', handleSpouseRequirement);
@@ -770,11 +778,46 @@ function initTabToggleCta() {
     const initialActive = document.querySelector('.tab-button.tab-active');
     updateCta((_a = initialActive === null || initialActive === void 0 ? void 0 : initialActive.dataset.target) !== null && _a !== void 0 ? _a : null);
 }
+function initBarActions() {
+    if (typeof document === 'undefined') {
+        return;
+    }
+    const calcButton = document.getElementById('bar-calc');
+    const resetButton = document.getElementById('bar-reset');
+    const tabButtons = Array.from(document.querySelectorAll('.tab-button'));
+    const findActivePanel = () => {
+        var _a;
+        return (_a = tabButtons.find((btn) => btn.classList.contains('tab-active'))) === null || _a === void 0 ? void 0 : _a.dataset.target;
+    };
+    let activePanelId = findActivePanel() !== null && findActivePanel() !== void 0 ? findActivePanel() : 'panel-simple';
+    const updateCalcLabel = () => {
+        var _a;
+        const isAdvanced = activePanelId === 'panel-advanced';
+        (_a = calcButton) === null || _a === void 0 ? void 0 : _a.textContent = isAdvanced ? '詳細を計算する' : '簡易を計算する';
+    };
+    calcButton === null || calcButton === void 0 ? void 0 : calcButton.addEventListener('click', () => {
+        const eventName = activePanelId === 'panel-advanced' ? 'simulator:advanced-calc' : 'simulator:simple-calc';
+        document.dispatchEvent(new CustomEvent(eventName));
+    });
+    resetButton === null || resetButton === void 0 ? void 0 : resetButton.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('simulator:reset-all'));
+    });
+    document.addEventListener('tab:changed', (event) => {
+        var _a;
+        const targetId = (_a = event.detail) === null || _a === void 0 ? void 0 : _a.id;
+        if (typeof targetId === 'string' && targetId.length > 0) {
+            activePanelId = targetId;
+            updateCalcLabel();
+        }
+    });
+    updateCalcLabel();
+}
 function bootstrap() {
     initTabs();
     initSimpleSimulator();
     initAdvancedSimulator();
     initTabToggleCta();
+    initBarActions();
 }
 if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {

@@ -597,7 +597,8 @@
       padding: 12px 20px;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      flex-wrap: wrap;
     }
 
     .result-bar__icon {
@@ -621,20 +622,71 @@
     .result-bar__content {
       display: flex;
       flex-direction: column;
+      flex: 1 1 260px;
+      min-width: 220px;
     }
 
     .result-bar__detail {
-      margin-left: auto;
+      margin: 0;
       font-size: 0.85rem;
       color: var(--text-muted);
+      flex: 1 1 180px;
     }
 
     .result-bar__detail:empty {
       display: none;
     }
 
-    .result-bar__cta {
+    .result-bar__actions {
       margin-left: auto;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .result-bar__btn {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(232, 108, 60, 0.25);
+      transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+    }
+
+    .result-bar__btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(232, 108, 60, 0.28);
+    }
+
+    .result-bar__btn--sub {
+      background: var(--accent-sub);
+      box-shadow: 0 8px 18px rgba(217, 67, 91, 0.2);
+    }
+
+    .result-bar__btn--sub:hover {
+      box-shadow: 0 12px 22px rgba(217, 67, 91, 0.24);
+    }
+
+    .result-bar__btn--ghost {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .result-bar__btn--ghost:hover {
+      background: var(--bg-highlight);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .result-bar__cta {
+      margin-left: 0;
       padding: 10px 18px;
       border-radius: 999px;
       background: var(--accent);
@@ -644,6 +696,7 @@
       box-shadow: var(--shadow);
       transition: opacity 120ms ease, transform 120ms ease;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .result-bar__cta:hover {
@@ -661,6 +714,17 @@
       .result-bar__detail,
       .result-bar__cta {
         margin-left: 0;
+      }
+
+      .result-bar__actions {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+      }
+
+      .result-bar__btn {
+        flex: 1 1 100%;
+        width: 100%;
       }
 
       .result-bar__cta {
@@ -756,10 +820,10 @@
               </div>
             </div>
 
-            <div class="actions simple-actions">
+            <!-- <div class="actions simple-actions">
               <button id="btn-simple-calc" class="btn-primary" type="button">この条件で控除上限額の目安を表示する</button>
               <button id="btn-simple-reset" class="btn-secondary" type="button">入力内容をリセット</button>
-            </div>
+            </div> -->
           </section>
         </div>
 
@@ -1048,10 +1112,10 @@
               </div>
             </div>
 
-            <div class="actions">
+            <!-- <div class="actions">
               <button class="btn-primary" type="submit">この条件で控除上限額を計算する</button>
               <button class="btn-secondary" type="reset">入力内容をリセット</button>
-            </div>
+            </div> -->
           </form>
         </section>
 
@@ -1079,6 +1143,10 @@
         <p class="result-bar__value" data-simple-result="value">-円</p>
       </div>
       <p class="result-bar__detail" data-simple-result="detail"></p>
+      <div class="result-bar__actions" aria-label="操作">
+        <button class="result-bar__btn" id="bar-calc" type="button">簡易を計算する</button>
+        <button class="result-bar__btn result-bar__btn--ghost" id="bar-reset" type="button">入力をリセットする</button>
+      </div>
       <a class="result-bar__cta" data-role="tab-toggle-cta" href="#panel-advanced">詳細シミュレーションに進む</a>
     </div>
   </aside>
