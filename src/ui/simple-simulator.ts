@@ -121,7 +121,7 @@ export function initSimpleSimulator(): void {
       target.toggleAttribute('data-empty', !detail);
     });
     resultNoteTargets.forEach((target) => {
-      target.textContent = 'あなたの控除上限額（目安）は';
+      target.textContent = 'あなたの控除上限額（目安）';
     });
   };
 

@@ -202,7 +202,7 @@ function initSimpleSimulator() {
       panelResultDetail.toggleAttribute('data-empty', !detail);
     }
     if (panelResultNote)
-      panelResultNote.textContent = 'あなたの控除上限額（目安）は';
+      panelResultNote.textContent = 'あなたの控除上限額（目安）';
 
     if (simplePanel && !simplePanel.hidden) {
       if (barResultValue) barResultValue.textContent = amount;
@@ -212,7 +212,7 @@ function initSimpleSimulator() {
         barResultDetail.style.display = detail ? 'block' : 'none';
       }
       if (barResultNote)
-        barResultNote.textContent = 'あなたの控除上限額（目安）は';
+        barResultNote.textContent = 'あなたの控除上限額（目安）';
     }
   };
   const applyStateToInputs = (state) => {
@@ -880,8 +880,7 @@ function initAdvancedSimulator() {
       if (barResultNote)
         barResultNote.textContent = 'あなたの控除上限額（目安）';
       if (barResultDetail) {
-        barResultDetail.textContent = `自己負担目安 ${formatYen(actualCost)}`;
-        barResultDetail.style.display = 'block';
+        barResultDetail.style.display = 'none';
       }
     }
   };
